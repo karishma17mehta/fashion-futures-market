@@ -1,7 +1,11 @@
 import anthropic
 import json
+import os
+from dotenv import load_dotenv
 
-client = anthropic.Anthropic()
+load_dotenv(os.path.join(os.path.dirname(__file__), "../.env"), override=True)
+
+client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 SCORING_PROMPT = """You are a fashion trend analyst with deep knowledge of how micro-trends emerge and spread to mainstream culture.
 
