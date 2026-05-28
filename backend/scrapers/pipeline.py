@@ -22,7 +22,7 @@ if str(_BACKEND_DIR) not in sys.path:
 from dotenv import load_dotenv
 load_dotenv(_BACKEND_DIR / ".env", override=True)
 
-from scrapers import whowhatwear_scraper, trendhunter_scraper, google_trends_scraper
+from scrapers import whowhatwear_scraper, trendhunter_scraper, google_trends_scraper, reddit_scraper
 from ai.trend_scorer import score_trend
 from db.models import Trend, Market, TrendStatus, MarketStatus
 from db.session import SessionLocal
@@ -170,6 +170,9 @@ def run_pipeline() -> None:
 
     print("  → Google Trends...")
     raw_signals.extend(google_trends_scraper.scrape())
+
+    print("  → Reddit...")
+    raw_signals.extend(reddit_scraper.run_reddit_scrape())
 
     total_found = len(raw_signals)
     print(f"  Total raw signals: {total_found}")
