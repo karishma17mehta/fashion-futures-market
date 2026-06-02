@@ -1,10 +1,16 @@
 export default function ScoreBadge({ score }: { score: number }) {
   const color =
-    score >= 8 ? "bg-rose-500/20 text-rose-300 border-rose-500/30" :
-    score >= 6 ? "bg-amber-500/20 text-amber-300 border-amber-500/30" :
-                 "bg-white/10 text-white/50 border-white/10";
+    score >= 9 ? "#e05252" :
+    score >= 8 ? "#c9a96e" :
+    score >= 7 ? "#8fa8c8" :
+    "rgba(242,237,232,0.3)";
+
   return (
-    <span className={`text-xs font-mono px-2 py-0.5 rounded border ${color}`}>
+    <span
+      className="inline-flex items-center gap-1.5 text-[11px] tracking-widest uppercase font-medium"
+      style={{ color }}
+    >
+      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: color }} />
       {score.toFixed(1)}
     </span>
   );

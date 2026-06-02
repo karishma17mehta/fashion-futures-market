@@ -1,0 +1,123 @@
+{
+  "generated_at": "2026-06-01T23:35:01.155375",
+  "week_of": "May 25",
+  "new_trends": [
+    {
+      "id": "8b19edcd-cd76-4f78-be2f-5cf05a5f59a4",
+      "name": "Quarter Zip Quiet Luxury",
+      "score": 10.0,
+      "source": "social_data",
+      "created_at": "2026-05-29T20:18:56.111206"
+    },
+    {
+      "id": "3615d62c-56ac-40ca-8c43-fc1e8cc434b1",
+      "name": "Summer Nails 2026",
+      "score": 9.9,
+      "source": "pinterest_trends_2026",
+      "created_at": "2026-05-29T18:06:20.126237"
+    },
+    {
+      "id": "6d058a6f-f0df-482b-b5c0-3e3b87423dd5",
+      "name": "The Edited Self: Intentional Wardrobe",
+      "score": 9.5,
+      "source": "depop_2026",
+      "created_at": "2026-05-29T18:06:20.157951"
+    },
+    {
+      "id": "cdb1ac37-d0bb-4e16-ba0e-dccb97bcc29e",
+      "name": "Neo Nostalgia",
+      "score": 9.3,
+      "source": "depop_2026",
+      "created_at": "2026-05-29T18:06:20.112108"
+    },
+    {
+      "id": "dd68e7c1-2f20-4469-ba37-493d44ddb377",
+      "name": "Thrift Arbitrage Culture",
+      "score": 9.3,
+      "source": "trend_intelligence",
+      "created_at": "2026-05-29T20:18:56.096633"
+    },
+    {
+      "id": "a1117cef-f2dd-41f8-9c10-8e65ed351fb2",
+      "name": "Sheer Layering",
+      "score": 9.2,
+      "source": "reddit",
+      "created_at": "2026-05-28T18:50:30.113333"
+    },
+    {
+      "id": "cce1b571-acfe-4e2f-8ff2-95da99fd85ae",
+      "name": "Matthieu Blazy Era at Chanel",
+      "score": 9.2,
+      "source": "social_data",
+      "created_at": "2026-05-29T18:06:20.136923"
+    },
+    {
+      "id": "cb79d367-7bd5-4387-b21b-eafa39a4c53c",
+      "name": "Modern Uniforms",
+      "score": 9.1,
+      "source": "depop_2026",
+      "created_at": "2026-05-29T18:06:20.099285"
+    }
+  ],
+  "top_movers": [
+    {
+      "id": "2c4983fa-ab06-4189-a409-e3ca52976491",
+      "name": "Parisian Summer Dressing",
+      "score": 4.1,
+      "delta": -1.4,
+      "direction": "down"
+    }
+  ],
+  "resolved_markets": [],
+  "cross_platform_confirmed": [
+    {
+      "id": "8b19edcd-cd76-4f78-be2f-5cf05a5f59a4",
+      "name": "Quarter Zip Quiet Luxury",
+      "score": 10.0,
+      "platforms": "google_trends,tiktok,editorial_rss,social_data",
+      "platform_count": 5
+    },
+    {
+      "id": "3615d62c-56ac-40ca-8c43-fc1e8cc434b1",
+      "name": "Summer Nails 2026",
+      "score": 9.9,
+      "platforms": "pinterest_trends_2026,pinterest",
+      "platform_count": 2
+    },
+    {
+      "id": "6d058a6f-f0df-482b-b5c0-3e3b87423dd5",
+      "name": "The Edited Self: Intentional Wardrobe",
+      "score": 9.5,
+      "platforms": "depop_2026,trend_intelligence",
+      "platform_count": 2
+    },
+    {
+      "id": "cdb1ac37-d0bb-4e16-ba0e-dccb97bcc29e",
+      "name": "Neo Nostalgia",
+      "score": 9.3,
+      "platforms": "depop_2026,reddit",
+      "platform_count": 2
+    },
+    {
+      "id": "dd68e7c1-2f20-4469-ba37-493d44ddb377",
+      "name": "Thrift Arbitrage Culture",
+      "score": 9.3,
+      "platforms": "tiktok,trend_intelligence,reddit",
+      "platform_count": 3
+    }
+  ],
+  "score_casualties": [
+    {
+      "name": "Parisian Summer Dressing",
+      "score": 4.1,
+      "delta": -1.4
+    }
+  ],
+  "stats": {
+    "total_trends": 315,
+    "new_this_week": 8,
+    "markets_resolved": 0,
+    "cross_platform_count": 24,
+    "top_score": 10.0
+  }
+}

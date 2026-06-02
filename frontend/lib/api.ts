@@ -41,6 +41,26 @@ export async function fetchLeaderboard() {
   return res.json();
 }
 
+export async function fetchPositions(userId: string) {
+  const res = await fetch(`${BASE}/users/${userId}/positions`, { cache: "no-store" });
+  return res.json();
+}
+
+export async function fetchSignals(params?: {
+  limit?: number;
+  min_score?: number;
+  source?: string;
+  cross_platform_only?: boolean;
+}) {
+  const p = new URLSearchParams();
+  if (params?.limit)                p.set("limit", String(params.limit));
+  if (params?.min_score)            p.set("min_score", String(params.min_score));
+  if (params?.source)               p.set("source", params.source);
+  if (params?.cross_platform_only)  p.set("cross_platform_only", "true");
+  const res = await fetch(`${BASE}/signals/top?${p}`, { cache: "no-store" });
+  return res.json();
+}
+
 export async function createUser(username: string) {
   const res = await fetch(`${BASE}/users/`, {
     method: "POST",

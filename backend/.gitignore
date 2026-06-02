@@ -1,0 +1,13 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+.env.*
+
+# Scraper caches — contain time-series snapshots, not source code
+scrapers/_tiktok_cache.json
+scrapers/_pinterest_cache.json
+
+# Alembic
+alembic/versions/__pycache__/

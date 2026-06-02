@@ -1,137 +1,173 @@
 """
-Scraper for TrendHunter fashion trends slideshow page.
-Returns list of dicts: {title, description, url, source}
+Fashion Editorial RSS Scraper
+==============================
+Replaces the defunct TrendHunter scraper (blocked with 403).
+Pulls current fashion editorial content from Vogue, Harper's Bazaar, and WWD
+via their public RSS feeds — all returning 2026 content.
+
+Sources:
+    Vogue Fashion    — runway, style, trend coverage
+    Vogue Shopping   — product/trend feature stories
+    Harper's Bazaar  — editorial trend analysis
+    WWD              — industry/trade fashion news
+
+Returns signal dicts compatible with the existing pipeline.
+Each article headline + description is treated as a weak trend signal,
+scored at 0% data completeness (no numeric data) — these are qualitative
+signals that confirm or suggest trends rather than measure them.
 """
 import random
 import time
+from typing import Optional
+
 import httpx
 from bs4 import BeautifulSoup
 
-BASE_URL = "https://www.trendhunter.com/slideshow/fashion-trends"
-SOURCE = "trendhunter"
+SOURCE = "editorial_rss"
 
-USER_AGENTS = [
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4.1 Safari/605.1.15",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+RSS_FEEDS: list[tuple[str, str]] = [
+    ("vogue_fashion",   "https://www.vogue.com/feed/fashion/rss"),
+    ("vogue_shopping",  "https://www.vogue.com/feed/shopping/rss"),
+    ("harpersbazaar",   "https://www.harpersbazaar.com/rss/fashion.xml"),
+    ("wwd",             "https://wwd.com/feed/"),
+    ("whowhatwear",     "https://www.whowhatwear.com/feed/"),
+    ("refinery29",      "https://www.refinery29.com/en-us/fashion/feed.rss"),
+    ("elle_fashion",    "https://www.elle.com/rss/fashion.xml/"),
+]
+
+# Keywords that suggest the article is about a specific trend (vs news/celebrity)
+TREND_SIGNAL_KEYWORDS: list[str] = [
+    "trend", "trending", "wear", "wearing", "style", "styled", "outfit",
+    "aesthetic", "look", "looks", "season", "summer", "spring", "fall", "winter",
+    "2026", "now", "moment", "rise", "rising", "comeback", "revival", "return",
+    "obsess", "everywhere", "spotted", "street style", "runway", "collection",
+    "micro", "macro", "core", "fashion week", "off duty", "it girl", "must-have",
+    "best", "top", "new", "latest", "biggest", "hottest", "editor", "recommend",
+]
+
+# Keywords that indicate it's NOT a useful trend signal
+NOISE_KEYWORDS: list[str] = [
+    "obituary", "dies", "death", "passed away", "rip", "hiring",
+    "coordinator", "job", "career", "executive", "appoints", "names ceo",
+    "earnings", "revenue", "acquisition", "merger", "ipo",
+    "review:", "recap:", "watch:", "listen:", "podcast",
+    # Travel / listicles / lifestyle (not fashion trends)
+    "airbnb", "hotel", "restaurant", "recipe", "travel", "vacation",
+    "gift guide", "gift ideas", "father's day", "mother's day",
+    "body oil", "skincare", "moisturizer", "peptide", "collagen",
+    "bridesmaid robe", "bachelorette", "wedding guest dress",
+    "best deals", "sale worth", "half-yearly sale", "memorial day deal",
+    "celebrity look of the week", "celebrity airport", "cannes film festival",
+    "red carpet", "film festival", "award show",
+    # Generic round-ups that aren't about a specific trend
+    "best activewear brands", "best tote bags", "best jeans for women",
+    "best workout sets", "best loafers for women",
+    "best sandals", "best bags", "best sunglasses",
+    # Non-fashion subjects
+    "susan boyle", "apple martin", "chase infiniti",
+]
+
+# Signals that strongly indicate a TREND (title must match at least one)
+STRONG_TITLE_SIGNALS: list[str] = [
+    "trend", "trending", "aesthetic", "comeback", "revival", "is back",
+    "making a return", "having a moment", "everywhere", "taking off",
+    "the new ", "rise of", "rising", "is the new", "going viral",
+    "just became", "officially", "about to be", "micro trend",
+    "season's", "2026's", "summer 2026", "spring 2026", "fall 2026",
+    "you'll be wearing", "everyone is wearing",
 ]
 
 
-def _random_headers() -> dict:
-    return {
-        "User-Agent": random.choice(USER_AGENTS),
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Accept-Encoding": "gzip, deflate, br",
-        "DNT": "1",
-        "Connection": "keep-alive",
-        "Upgrade-Insecure-Requests": "1",
-        "Referer": "https://www.google.com/",
-        "Sec-Fetch-Dest": "document",
-        "Sec-Fetch-Mode": "navigate",
-        "Sec-Fetch-Site": "cross-site",
-    }
+def _is_trend_signal(title: str, description: str) -> bool:
+    """Return True if the article is likely about a specific fashion trend."""
+    title_lower = title.lower()
+    text = (title + " " + description).lower()
+
+    # Hard noise filter — reject immediately
+    if any(kw in text for kw in NOISE_KEYWORDS):
+        return False
+
+    # Title must contain a strong trend signal word/phrase
+    if not any(kw in title_lower for kw in STRONG_TITLE_SIGNALS):
+        return False
+
+    # Must also contain a fashion-domain keyword somewhere
+    return any(kw in text for kw in TREND_SIGNAL_KEYWORDS)
 
 
-def _parse_trends(soup: BeautifulSoup) -> list[dict]:
-    results = []
-    seen: set[str] = set()
+def _clean_text(text: Optional[str]) -> str:
+    if not text:
+        return ""
+    soup = BeautifulSoup(text, "html.parser")
+    return " ".join(soup.get_text(separator=" ").split())
 
-    # TrendHunter slideshow: each slide is typically an <article> or <li> with class containing "trend"
-    candidates = soup.find_all(
-        ["article", "li", "div"],
-        class_=lambda c: c and any(
-            token in c for token in ["trend", "slide", "item", "card", "story"]
+
+def _scrape_feed(label: str, url: str) -> list[dict]:
+    """Fetch one RSS feed and return signal dicts."""
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
         ),
-    )
+        "Accept": "application/rss+xml, application/xml, text/xml, */*",
+    }
+    try:
+        resp = httpx.get(url, headers=headers, timeout=20, follow_redirects=True)
+        resp.raise_for_status()
+    except Exception as e:
+        print(f"[editorial_rss] {label} error: {e}")
+        return []
 
-    for item in candidates:
-        # Title
-        heading = item.find(["h1", "h2", "h3", "h4", "h5"])
-        if not heading:
-            heading = item.find(class_=lambda c: c and "title" in c)
-        title = heading.get_text(strip=True) if heading else ""
+    soup = BeautifulSoup(resp.text, "xml")
+    items = soup.find_all("item")
 
-        if not title or len(title) < 4:
+    results = []
+    for item in items:
+        title_tag = item.find("title")
+        desc_tag  = item.find("description") or item.find("summary")
+        link_tag  = item.find("link")
+
+        title = _clean_text(title_tag.text if title_tag else "")
+        desc  = _clean_text(desc_tag.text if desc_tag else "")
+        url_  = link_tag.text.strip() if link_tag else ""
+
+        if not title or len(title) < 8:
+            continue
+        if not _is_trend_signal(title, desc):
             continue
 
-        # URL
-        anchor = item.find("a", href=True)
-        url = ""
-        if anchor:
-            href = anchor["href"]
-            url = href if href.startswith("http") else "https://www.trendhunter.com" + href
-
-        if url in seen and url:
-            continue
-
-        # Description
-        desc_tag = item.find(
-            ["p", "span", "div"],
-            class_=lambda c: c and any(
-                token in c for token in ["desc", "summary", "excerpt", "body", "text", "copy"]
-            ),
-        )
-        if not desc_tag:
-            # fall back to first <p>
-            desc_tag = item.find("p")
-        description = desc_tag.get_text(strip=True) if desc_tag else ""
-
-        if url:
-            seen.add(url)
         results.append({
-            "title": title,
-            "description": description,
-            "url": url,
-            "source": SOURCE,
+            "title":       title,
+            "description": desc[:400] if desc else title,
+            "url":         url_,
+            "source":      SOURCE,
+            "feed":        label,
         })
 
     return results
 
 
 def scrape() -> list[dict]:
-    """Scrape TrendHunter fashion slideshow and return signal dicts."""
-    results = []
-    try:
-        time.sleep(random.uniform(2, 5))
-        with httpx.Client(timeout=30, follow_redirects=True) as client:
-            response = client.get(BASE_URL, headers=_random_headers())
-            response.raise_for_status()
+    """Scrape all RSS feeds and return combined trend signal dicts."""
+    all_results: list[dict] = []
+    seen_titles: set[str] = set()
 
-        soup = BeautifulSoup(response.text, "html.parser")
-        results = _parse_trends(soup)
+    for label, url in RSS_FEEDS:
+        time.sleep(random.uniform(0.5, 1.5))
+        signals = _scrape_feed(label, url)
 
-        # Fallback: grab all anchors with /trends/ in URL that have meaningful text
-        if not results:
-            seen: set[str] = set()
-            for anchor in soup.find_all("a", href=True):
-                href = anchor["href"]
-                if "/trends/" not in href and "/trend/" not in href:
-                    continue
-                url = href if href.startswith("http") else "https://www.trendhunter.com" + href
-                if url in seen:
-                    continue
-                title = anchor.get_text(strip=True)
-                if len(title) < 5:
-                    continue
-                seen.add(url)
-                results.append({
-                    "title": title,
-                    "description": "",
-                    "url": url,
-                    "source": SOURCE,
-                })
+        for s in signals:
+            norm = s["title"].lower().strip()
+            if norm not in seen_titles:
+                seen_titles.add(norm)
+                all_results.append(s)
 
-    except Exception as exc:  # noqa: BLE001
-        print(f"[trendhunter_scraper] Error: {exc}")
-        return []
-
-    print(f"[trendhunter_scraper] Found {len(results)} trends.")
-    return results
+    print(f"[editorial_rss] {len(all_results)} trend signals from {len(RSS_FEEDS)} feeds")
+    return all_results
 
 
 if __name__ == "__main__":
     import json
     data = scrape()
-    print(json.dumps(data[:5], indent=2))
+    for d in data:
+        print(f"[{d['feed']}] {d['title'][:80]}")

@@ -30,6 +30,9 @@ class TrendOut(BaseModel):
     signal_velocity: float
     status: str
     created_at: datetime
+    platform_count: int = 1
+    confirmed_sources: Optional[str] = None
+    score_updated_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True

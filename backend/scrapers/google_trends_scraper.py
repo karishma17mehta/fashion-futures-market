@@ -134,3 +134,44 @@ if __name__ == "__main__":
     import json
     data = scrape()
     print(json.dumps(data, indent=2))
+
+
+def scrape_terms(terms: list[str]) -> list[dict]:
+    """
+    Query Google Trends for a custom list of terms (not just the seed list).
+    Used by auto_resolve agent to check specific trend names.
+    Same return format as scrape().
+    """
+    original = SEED_AESTHETICS[:]
+    # Temporarily replace seed list
+    import scrapers.google_trends_scraper as _self
+    _self.SEED_AESTHETICS[:] = terms
+    # Re-run using the existing batched logic but with provided terms
+    results: list[dict] = []
+    pytrends = _build_pytrends()
+    for batch in _batches(terms, _BATCH_SIZE):
+        for term in batch:
+            try:
+                time.sleep(random.uniform(1, 3))
+                pytrends.build_payload([term], cat=185, timeframe="today 3-m", geo="", gprop="")
+                interest_df = pytrends.interest_over_time()
+                velocity = _velocity_from_interest(interest_df)
+                weekly_vols = []
+                if interest_df is not None and not interest_df.empty and term in interest_df.columns:
+                    weekly_vols = interest_df[term].tolist()[-13:]
+                results.append({
+                    "term": term,
+                    "velocity_score": velocity,
+                    "weekly_volumes": weekly_vols,
+                    "rising_queries": [],
+                    "source": SOURCE,
+                })
+            except Exception as exc:
+                results.append({
+                    "term": term,
+                    "velocity_score": 0.0,
+                    "weekly_volumes": [],
+                    "rising_queries": [],
+                    "source": SOURCE,
+                })
+    return results

@@ -2,85 +2,300 @@ import { fetchMarkets, fetchTrends } from "@/lib/api";
 import Link from "next/link";
 import ScoreBadge from "@/components/ScoreBadge";
 import PriceBar from "@/components/PriceBar";
+import SourceBadge from "@/components/SourceBadge";
+import VelocityIndicator from "@/components/VelocityIndicator";
+import NewBadge from "@/components/NewBadge";
+import SignalTicker from "@/components/SignalTicker";
 
-const SOURCE_LABEL: Record<string, string> = {
-  wgsn: "WGSN",
-  instagram_databutmakeitfashion: "Instagram Data",
-  google_trends: "Google Trends",
-  reddit: "Reddit",
-};
+export const revalidate = 60; // ISR: refresh every 60s
 
 export default async function Home() {
-  const [marketsData, trendsData] = await Promise.all([
+  const [marketsData, trendsData, allTrendsData] = await Promise.all([
     fetchMarkets("open"),
-    fetchTrends(5, 7.5),
+    fetchTrends(6, 8.0),
+    fetchTrends(40),
   ]);
 
-  const markets: any[] = marketsData.markets || [];
-  const topTrends: any[] = trendsData.trends || [];
+  const markets: any[]    = marketsData.markets  || [];
+  const topTrends: any[]  = trendsData.trends    || [];
+  const allTrends: any[]  = allTrendsData.trends || [];
+
+  // Breaking = created in last 48h
+  const breaking = allTrends
+    .filter((t: any) => {
+      const age = Date.now() - new Date(t.created_at).getTime();
+      return age < 48 * 60 * 60 * 1000;
+    })
+    .slice(0, 20);
+
+  // Platform breakdown for stats
+  const bySource = allTrends.reduce((acc: Record<string, number>, t: any) => {
+    const src = t.source?.includes("tiktok") ? "tiktok"
+              : t.source?.includes("pinterest") ? "pinterest"
+              : t.source?.includes("editorial") ? "editorial"
+              : t.source?.includes("reddit") ? "reddit"
+              : "other";
+    acc[src] = (acc[src] || 0) + 1;
+    return acc;
+  }, {});
+
+  // Hottest market (highest trading volume)
+  const hottestMarket = [...markets].sort((a, b) => b.total_volume - a.total_volume)[0];
 
   return (
-    <div className="space-y-10">
-      {/* Hero */}
-      <div className="border border-white/10 rounded-2xl p-8 bg-white/5">
-        <p className="text-xs font-mono text-rose-400 uppercase tracking-widest mb-3">Prediction Market</p>
-        <h1 className="text-4xl font-bold tracking-tight mb-3">
-          Trade Fashion Trends<br />Before They Go Mainstream
-        </h1>
-        <p className="text-white/50 max-w-xl">
-          AI scrapes underground fashion signals. You predict which micro-trends break through.
-          Early callers earn points. Brands buy the intelligence.
+    <div className="space-y-0">
+
+      {/* ── Signal Ticker ─────────────────────────────────────────────────── */}
+      {breaking.length > 0 && (
+        <div style={{ margin: "0 -20px 0" }}>
+          <SignalTicker items={breaking} />
+        </div>
+      )}
+
+      {/* ── Hero ─────────────────────────────────────────────────────────── */}
+      <div className="pt-12 pb-6 fade-up">
+        <p className="text-[10px] tracking-[0.35em] uppercase mb-6" style={{ color: "var(--accent)" }}>
+          Fashion Prediction Intelligence
         </p>
-        <div className="flex gap-8 mt-6 text-sm">
-          <div><span className="text-2xl font-bold">{markets.length}</span><span className="text-white/40 ml-2">Open Markets</span></div>
-          <div><span className="text-2xl font-bold">1000</span><span className="text-white/40 ml-2">Starting Points</span></div>
-          <div><span className="text-2xl font-bold">4</span><span className="text-white/40 ml-2">Signal Sources</span></div>
+        <h1 className="serif text-6xl md:text-7xl font-light leading-[1.05] mb-6">
+          Trade trends<br />
+          <em className="score-glow" style={{ color: "var(--accent)" }}>before</em> they break.
+        </h1>
+        <p className="text-base max-w-lg leading-relaxed" style={{ color: "var(--text-muted)" }}>
+          Our AI monitors underground fashion signals across TikTok, Pinterest, Reddit, and editorial
+          sources. Scored by velocity, novelty & cross-platform confirmation. You trade what goes mainstream.
+        </p>
+
+        {/* Stats row */}
+        <div className="flex flex-wrap gap-0 mt-12" style={{ borderTop: "1px solid var(--border)" }}>
+          {[
+            { value: markets.length,     label: "Open Markets" },
+            { value: allTrends.length,   label: "Trends Tracked" },
+            { value: breaking.length,    label: "New This Week" },
+            { value: "5",                label: "Signal Sources" },
+          ].map((stat, i) => (
+            <div
+              key={i}
+              className="flex-1 min-w-[120px] py-5"
+              style={{
+                borderRight: i < 3 ? "1px solid var(--border)" : undefined,
+                paddingLeft: i === 0 ? 0 : "2rem",
+              }}
+            >
+              <p className="serif text-4xl font-light score-glow" style={{ color: "var(--accent)" }}>
+                {stat.value}
+              </p>
+              <p className="text-[9px] tracking-widest uppercase mt-1.5" style={{ color: "var(--text-faint)" }}>
+                {stat.label}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Top signals */}
-      {topTrends.length > 0 && (
-        <div>
-          <h2 className="text-xs font-mono text-white/40 uppercase tracking-widest mb-4">Top AI Signals Right Now</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {topTrends.map((t: any) => (
-              <Link key={t.id} href={`/trends/${t.id}`}
-                className="border border-white/10 rounded-xl p-4 hover:border-white/30 hover:bg-white/5 transition-all group">
-                <div className="flex items-start justify-between mb-2">
-                  <ScoreBadge score={t.ai_score} />
-                  <span className="text-xs text-white/30">{SOURCE_LABEL[t.source] || t.source}</span>
+      <hr className="rule" />
+
+      {/* ── Source Intelligence Bar ───────────────────────────────────────── */}
+      <div className="py-6 fade-up">
+        <p className="text-[9px] tracking-[0.3em] uppercase mb-4" style={{ color: "var(--text-faint)" }}>
+          Signal Sources Active This Week
+        </p>
+        <div className="flex flex-wrap gap-3">
+          {[
+            { source: "tiktok",       count: bySource.tiktok || 0 },
+            { source: "pinterest",    count: bySource.pinterest || 0 },
+            { source: "editorial_rss",count: bySource.editorial || 0 },
+            { source: "reddit",       count: bySource.reddit || 0 },
+            { source: "google_trends",count: 0 },
+          ].filter(s => s.count > 0 || s.source === "google_trends").map(({ source, count }) => (
+            <div key={source} className="flex items-center gap-2">
+              <SourceBadge source={source} />
+              {count > 0 && (
+                <span className="text-[9px]" style={{ color: "var(--text-faint)" }}>
+                  {count} signals
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <hr className="rule" />
+
+      {/* ── Hottest Market ────────────────────────────────────────────────── */}
+      {hottestMarket && hottestMarket.total_volume > 0 && (
+        <>
+          <div className="py-8 fade-up">
+            <p className="text-[9px] tracking-[0.3em] uppercase mb-5" style={{ color: "var(--text-muted)" }}>
+              Most Traded Right Now
+            </p>
+            <Link
+              href={`/markets/${hottestMarket.id}`}
+              className="hover-tile flex items-center justify-between p-6 group"
+              style={{ border: "1px solid var(--border)" }}
+            >
+              <div className="flex-1 min-w-0 pr-6">
+                <p className="serif text-2xl font-light leading-snug mb-2">{hottestMarket.question}</p>
+                <p className="text-[10px] tracking-widest uppercase" style={{ color: "var(--text-faint)" }}>
+                  {hottestMarket.total_volume} pts traded ·
+                  Closes {new Date(hottestMarket.resolution_date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                </p>
+              </div>
+              <div className="w-36 shrink-0">
+                <PriceBar yes={hottestMarket.yes_price} no={hottestMarket.no_price} />
+                <div className="flex justify-between mt-2">
+                  <span className="text-[9px]" style={{ color: "var(--green)" }}>
+                    YES {Math.round(hottestMarket.yes_price * 100)}¢
+                  </span>
+                  <span className="text-[9px]" style={{ color: "var(--red)" }}>
+                    NO {Math.round(hottestMarket.no_price * 100)}¢
+                  </span>
                 </div>
-                <p className="font-medium text-sm group-hover:text-white transition-colors">{t.name}</p>
-                <p className="text-xs text-white/40 mt-1 line-clamp-2">{t.description}</p>
+              </div>
+            </Link>
+          </div>
+          <hr className="rule" />
+        </>
+      )}
+
+      {/* ── Top AI Signals ────────────────────────────────────────────────── */}
+      {topTrends.length > 0 && (
+        <div className="py-8 fade-up">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <p className="text-[9px] tracking-[0.3em] uppercase mb-1" style={{ color: "var(--text-muted)" }}>
+                Highest-Confidence Signals
+              </p>
+              <p className="text-[9px]" style={{ color: "var(--text-faint)" }}>
+                Score ≥ 8.0 · multi-source verified
+              </p>
+            </div>
+            <Link
+              href="/trends"
+              className="text-[10px] tracking-widest uppercase transition-colors"
+              style={{ color: "var(--accent)" }}
+            >
+              All {allTrends.length} signals →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px"
+            style={{ background: "var(--border)" }}>
+            {topTrends.map((t: any) => (
+              <Link
+                key={t.id}
+                href={`/trends/${t.id}`}
+                className="hover-tile group flex flex-col p-6"
+              >
+                {/* Top row: score + new badge */}
+                <div className="flex items-start justify-between mb-3">
+                  <ScoreBadge score={t.ai_score} />
+                  <NewBadge createdAt={t.created_at} />
+                </div>
+
+                {/* Name */}
+                <p className="serif text-xl font-light leading-tight mb-2 flex-1">{t.name}</p>
+
+                {/* Description */}
+                <p className="text-xs leading-relaxed line-clamp-2 mb-4" style={{ color: "var(--text-muted)" }}>
+                  {t.description}
+                </p>
+
+                {/* Footer: source + velocity */}
+                <div className="flex items-center justify-between mt-auto pt-3"
+                  style={{ borderTop: "1px solid var(--border)" }}>
+                  <SourceBadge source={t.source} />
+                  {t.signal_velocity > 0 && (
+                    <VelocityIndicator velocity={t.signal_velocity} />
+                  )}
+                </div>
               </Link>
             ))}
           </div>
         </div>
       )}
 
-      {/* Markets */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xs font-mono text-white/40 uppercase tracking-widest">Open Markets</h2>
-          <Link href="/trends" className="text-xs text-rose-400 hover:text-rose-300">View all trends →</Link>
+      <hr className="rule" />
+
+      {/* ── Open Markets ─────────────────────────────────────────────────── */}
+      <div className="py-8 fade-up">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <p className="text-[9px] tracking-[0.3em] uppercase mb-1" style={{ color: "var(--text-muted)" }}>
+              Open Prediction Markets
+            </p>
+            <p className="text-[9px]" style={{ color: "var(--text-faint)" }}>
+              Resolving in 90 days · call early, earn more
+            </p>
+          </div>
+          <Link
+            href="/trends"
+            className="text-[10px] tracking-widest uppercase"
+            style={{ color: "var(--accent)" }}
+          >
+            Browse all →
+          </Link>
         </div>
-        <div className="space-y-3">
-          {markets.slice(0, 15).map((m: any) => (
-            <Link key={m.id} href={`/markets/${m.id}`}
-              className="flex items-center gap-4 border border-white/10 rounded-xl p-4 hover:border-white/30 hover:bg-white/5 transition-all group">
+
+        <div className="space-y-px" style={{ background: "var(--border)" }}>
+          {markets.slice(0, 12).map((m: any, i: number) => (
+            <Link
+              key={m.id}
+              href={`/markets/${m.id}`}
+              className="hover-tile flex items-center gap-6 px-6 py-5"
+            >
+              {/* Row number */}
+              <span
+                className="text-[11px] font-light shrink-0 w-5 text-right"
+                style={{ color: "var(--text-faint)", fontFamily: "'Cormorant Garamond', serif" }}
+              >
+                {i + 1}
+              </span>
+
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate group-hover:text-white transition-colors">{m.question}</p>
-                <p className="text-xs text-white/30 mt-0.5">
-                  Closes {new Date(m.resolution_date).toLocaleDateString()} · {m.total_volume} pts traded
+                <p className="text-sm leading-snug mb-1" style={{ fontWeight: 400 }}>
+                  {m.question}
+                </p>
+                <p className="text-[10px] tracking-widest uppercase" style={{ color: "var(--text-faint)" }}>
+                  Closes {new Date(m.resolution_date).toLocaleDateString("en-US", {
+                    month: "short", day: "numeric", year: "numeric"
+                  })}
+                  {m.total_volume > 0 && (
+                    <span className="ml-3" style={{ color: "var(--accent)" }}>
+                      {m.total_volume} pts
+                    </span>
+                  )}
                 </p>
               </div>
-              <div className="w-32 shrink-0">
+
+              <div className="w-28 shrink-0">
                 <PriceBar yes={m.yes_price} no={m.no_price} />
+                <div className="flex justify-between mt-1.5">
+                  <span className="text-[9px]" style={{ color: "var(--green)" }}>
+                    {Math.round(m.yes_price * 100)}¢
+                  </span>
+                  <span className="text-[9px]" style={{ color: "var(--red)" }}>
+                    {Math.round(m.no_price * 100)}¢
+                  </span>
+                </div>
               </div>
             </Link>
           ))}
         </div>
+
+        {markets.length > 12 && (
+          <div className="text-center mt-6">
+            <Link
+              href="/trends"
+              className="text-[10px] tracking-widest uppercase"
+              style={{ color: "var(--text-faint)" }}
+            >
+              + {markets.length - 12} more markets →
+            </Link>
+          </div>
+        )}
       </div>
+
     </div>
   );
 }

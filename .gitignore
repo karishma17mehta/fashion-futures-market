@@ -12,3 +12,6 @@ node_modules/
 
 # OS
 .DS_Store
+
+# Stray local SQLite (real DB is Postgres)
+backend/fashion_futures.db
