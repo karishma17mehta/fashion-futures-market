@@ -6,6 +6,7 @@ import SourceBadge from "@/components/SourceBadge";
 import ScoreBadge from "@/components/ScoreBadge";
 import Link from "next/link";
 import { use } from "react";
+import { useAuth } from "@/lib/auth";
 
 // Price history stored in memory for this session
 let priceHistory: { yes: number; no: number; ts: number }[] = [];
@@ -54,7 +55,8 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<{ yes: number; no: number; ts: number }[]>([]);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const userId = "ed19647b-9a4e-4929-9467-d1b6f92a9cd4";
+  const { user, refresh } = useAuth();
+  const userId = user?.id;
 
   const loadMarket = useCallback(async () => {
     const m = await fetchMarket(id);
@@ -79,11 +81,13 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
   }, [loadMarket]);
 
   async function trade(position: "yes" | "no") {
+    if (!userId) return;
     setLoading(true);
     setResult(null);
     const res = await placeTrade(id, userId, position, amount);
     setResult(res);
     await loadMarket();
+    await refresh();  // update points shown in the nav
     setLoading(false);
   }
 

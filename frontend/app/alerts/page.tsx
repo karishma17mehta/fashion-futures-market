@@ -1,9 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/lib/auth";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-const USER_ID = "ed19647b-9a4e-4929-9467-d1b6f92a9cd4"; // same as portfolio
 
 interface Alert {
   id: string;
@@ -25,6 +25,7 @@ const SOURCES = [
 ];
 
 export default function AlertsPage() {
+  const { user } = useAuth();
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
@@ -38,8 +39,9 @@ export default function AlertsPage() {
   const [sourceFilter, setSourceFilter] = useState("");
 
   const loadAlerts = async () => {
+    if (!user?.id) return;
     try {
-      const r = await fetch(`${API}/alerts/${USER_ID}`);
+      const r = await fetch(`${API}/alerts/${user.id}`);
       const d = await r.json();
       setAlerts(d.alerts || []);
     } catch {
@@ -49,20 +51,21 @@ export default function AlertsPage() {
     }
   };
 
-  useEffect(() => { loadAlerts(); }, []);
+  useEffect(() => { loadAlerts(); }, [user?.id]);
 
   const createAlert = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
     if (!trendName.trim()) { setError("Enter a trend name or * for all trends"); return; }
+    if (!user?.id) { setError("Please sign in first."); return; }
     setCreating(true);
     try {
       const r = await fetch(`${API}/alerts/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: USER_ID,
+          user_id: user.id,
           trend_name: trendName.trim(),
           min_score: minScore,
           source_filter: sourceFilter || null,

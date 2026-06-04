@@ -61,11 +61,32 @@ export async function fetchSignals(params?: {
   return res.json();
 }
 
-export async function createUser(username: string) {
-  const res = await fetch(`${BASE}/users/`, {
+// ── Auth ──────────────────────────────────────────────────────────────────
+export async function signupRequest(email: string, username: string, password: string) {
+  const res = await fetch(`${BASE}/auth/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username }),
+    body: JSON.stringify({ email, username, password }),
   });
+  const body = await res.json().catch(() => ({}));
+  return { ok: res.ok, status: res.status, body };
+}
+
+export async function loginRequest(email: string, password: string) {
+  const res = await fetch(`${BASE}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+  const body = await res.json().catch(() => ({}));
+  return { ok: res.ok, status: res.status, body };
+}
+
+export async function fetchMe(token: string) {
+  const res = await fetch(`${BASE}/auth/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store",
+  });
+  if (!res.ok) return null;
   return res.json();
 }

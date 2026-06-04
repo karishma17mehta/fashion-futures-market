@@ -95,6 +95,16 @@ def leaderboard(limit: int = 50, db: Session = Depends(get_db)):
     return {"users": result}
 
 
+@router.get("/by-username/{username}", response_model=UserOut)
+def get_user_by_username(username: str, db: Session = Depends(get_db)):
+    """Resolve a username to a user — lets a returning player resume their
+    account from a new device (username-only auth, play-money game)."""
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return UserOut.from_orm(user)
+
+
 @router.get("/{user_id}/badges")
 def get_badges(user_id: str, db: Session = Depends(get_db)):
     """Return all badges earned by a user."""

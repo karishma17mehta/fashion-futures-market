@@ -91,8 +91,9 @@ class User(Base):
     __tablename__ = "users"
 
     id            = Column(String, primary_key=True)
-    username      = Column(String, unique=True, nullable=False)
-    email         = Column(String, nullable=True)          # for alerts
+    username      = Column(String, unique=True, nullable=False)  # public display name
+    email         = Column(String, unique=True, nullable=True)   # login id (private)
+    password_hash = Column(String, nullable=True)                # bcrypt hash
     points        = Column(Integer, default=1000)
     xp            = Column(Integer, default=0)             # experience points (gamification)
     streak_days   = Column(Integer, default=0)             # consecutive days active

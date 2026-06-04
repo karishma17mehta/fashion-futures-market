@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Nav from "@/components/Nav";
+import { AuthProvider } from "@/lib/auth";
+import AuthGate from "@/components/AuthGate";
 
 export const metadata: Metadata = {
   title: "Fashion Futures Market",
@@ -19,17 +21,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="min-h-screen" style={{ background: "var(--bg)", color: "var(--text)" }}>
-        <Nav />
-        <main className="max-w-5xl mx-auto px-5 py-10">{children}</main>
-        <footer className="max-w-5xl mx-auto px-5 py-10 mt-16">
-          <hr className="rule mb-6" />
-          <div className="flex items-center justify-between">
-            <span className="serif italic text-lg" style={{ color: "var(--accent)" }}>Fashion Futures</span>
-            <span className="text-xs tracking-widest uppercase" style={{ color: "var(--text-faint)" }}>
-              Prediction Intelligence · 2026
-            </span>
-          </div>
-        </footer>
+        <AuthProvider>
+          <AuthGate>
+            <Nav />
+            <main className="max-w-5xl mx-auto px-5 py-10">{children}</main>
+            <footer className="max-w-5xl mx-auto px-5 py-10 mt-16">
+              <hr className="rule mb-6" />
+              <div className="flex items-center justify-between">
+                <span className="serif italic text-lg" style={{ color: "var(--accent)" }}>Fashion Futures</span>
+                <span className="text-xs tracking-widest uppercase" style={{ color: "var(--text-faint)" }}>
+                  Prediction Intelligence · 2026
+                </span>
+              </div>
+            </footer>
+          </AuthGate>
+        </AuthProvider>
       </body>
     </html>
   );

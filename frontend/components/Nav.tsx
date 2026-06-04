@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/lib/auth";
 
 const links = [
   { href: "/",           label: "Markets" },
@@ -13,6 +14,7 @@ const links = [
 
 export default function Nav() {
   const path = usePathname();
+  const { user, logout } = useAuth();
   return (
     <nav
       className="sticky top-0 z-50 backdrop-blur-md"
@@ -47,6 +49,26 @@ export default function Nav() {
               </Link>
             );
           })}
+
+          {/* Account */}
+          {user && (
+            <div className="flex items-center gap-3 pl-5" style={{ borderLeft: "1px solid var(--border)" }}>
+              <div className="text-right leading-tight">
+                <p className="text-xs" style={{ color: "var(--text)" }}>{user.username}</p>
+                <p className="text-[10px]" style={{ color: "var(--accent)" }}>
+                  {user.points.toLocaleString()} pts
+                </p>
+              </div>
+              <button
+                onClick={logout}
+                title="Switch user"
+                className="text-[10px] tracking-widest uppercase transition-colors"
+                style={{ color: "var(--text-faint)" }}
+              >
+                Switch
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </nav>

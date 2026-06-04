@@ -5,9 +5,7 @@ import Link from "next/link";
 import PriceBar from "@/components/PriceBar";
 import ScoreBadge from "@/components/ScoreBadge";
 import SourceBadge from "@/components/SourceBadge";
-
-// Hardcoded for demo — in production this would come from auth context
-const USER_ID = "ed19647b-9a4e-4929-9467-d1b6f92a9cd4";
+import { useAuth } from "@/lib/auth";
 
 type Position = {
   id: string;
@@ -73,18 +71,20 @@ function StatusPill({ status }: { status: string }) {
 }
 
 export default function PortfolioPage() {
+  const { user: authUser } = useAuth();
   const [data, setData]   = useState<{ positions: Position[]; summary: any } | null>(null);
   const [user, setUser]   = useState<any>(null);
   const [filter, setFilter] = useState<"all" | "open" | "resolved">("all");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([fetchPositions(USER_ID), fetchUser(USER_ID)]).then(([posData, userData]) => {
+    if (!authUser?.id) return;
+    Promise.all([fetchPositions(authUser.id), fetchUser(authUser.id)]).then(([posData, userData]) => {
       setData(posData);
       setUser(userData);
       setLoading(false);
     });
-  }, []);
+  }, [authUser?.id]);
 
   const positions: Position[] = data?.positions || [];
   const summary = data?.summary || {};
