@@ -43,6 +43,16 @@ export default async function Home() {
   // Hottest market (highest trading volume)
   const hottestMarket = [...markets].sort((a, b) => b.total_volume - a.total_volume)[0];
 
+  // Markets shown on the homepage: most-traded first (so a market you trade
+  // surfaces here), then by the underlying trend's score for the untraded rest.
+  const scoreById: Record<string, number> = {};
+  allTrends.forEach((t: any) => { scoreById[t.id] = t.ai_score ?? 0; });
+  const displayMarkets = [...markets].sort((a, b) => {
+    const vol = (b.total_volume || 0) - (a.total_volume || 0);
+    if (vol !== 0) return vol;
+    return (scoreById[b.trend_id] ?? 0) - (scoreById[a.trend_id] ?? 0);
+  });
+
   return (
     <div className="space-y-0">
 
@@ -239,7 +249,7 @@ export default async function Home() {
         </div>
 
         <div className="space-y-px" style={{ background: "var(--border)" }}>
-          {markets.slice(0, 12).map((m: any, i: number) => (
+          {displayMarkets.slice(0, 12).map((m: any, i: number) => (
             <Link
               key={m.id}
               href={`/markets/${m.id}`}
