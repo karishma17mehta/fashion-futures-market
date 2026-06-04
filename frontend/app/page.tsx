@@ -229,7 +229,7 @@ export default async function Home() {
             </p>
           </div>
           <Link
-            href="/trends"
+            href="/markets"
             className="text-[10px] tracking-widest uppercase"
             style={{ color: "var(--accent)" }}
           >
@@ -286,7 +286,7 @@ export default async function Home() {
         {markets.length > 12 && (
           <div className="text-center mt-6">
             <Link
-              href="/trends"
+              href="/markets"
               className="text-[10px] tracking-widest uppercase"
               style={{ color: "var(--text-faint)" }}
             >
