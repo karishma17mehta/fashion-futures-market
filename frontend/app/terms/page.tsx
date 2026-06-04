@@ -79,7 +79,7 @@ export default function TermsPage() {
         <P><B>Data retention &amp; your choices.</B> We keep your data while your account is active. You may
           request access to, or deletion of, your account and associated data by contacting us.</P>
         <P><B>Contact.</B> Questions about these Terms or your data? Reach us at{" "}
-          <span style={{ color: "var(--accent)" }}>hello@fashionfutures.app</span>.</P>
+          <a href="mailto:karishma17mehta@gmail.com" style={{ color: "var(--accent)" }}>karishma17mehta@gmail.com</a>.</P>
       </Section>
 
       <p className="text-[10px] mt-12" style={{ color: "var(--text-faint)" }}>
