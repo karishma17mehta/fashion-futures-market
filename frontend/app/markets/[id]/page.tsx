@@ -48,6 +48,38 @@ function MiniPriceChart({ history }: { history: { yes: number }[] }) {
   );
 }
 
+// Turns the trend's data into a "form guide" read — so bettors reason from
+// evidence (what WILL happen) rather than taste (what they WANT to happen).
+function signalRead(trend: any) {
+  const score = trend.ai_score ?? 5;
+  const vel = trend.signal_velocity ?? 0;
+  const platforms = trend.platform_count || 1;
+
+  const scoreColor = score >= 8 ? "var(--green)" : score >= 6 ? "var(--accent)" : "var(--text-muted)";
+
+  // Momentum from signal velocity
+  let momentum = "Steady →", momentumColor = "var(--text-muted)";
+  if (vel >= 8)      { momentum = "Surging ↑↑"; momentumColor = "var(--green)"; }
+  else if (vel > 0)  { momentum = "Rising ↑";   momentumColor = "var(--accent)"; }
+
+  // Plain-language strength + confirmation phrasing
+  const strength = score >= 8 ? "Strong" : score >= 6 ? "Building" : "Early, speculative";
+  const conf = platforms >= 3 ? `confirmed across ${platforms} platforms`
+             : platforms === 2 ? "seen on 2 platforms"
+             : "single-source so far";
+  const move = vel >= 8 ? "and accelerating fast" : vel > 0 ? "and gaining momentum" : "but momentum is flat";
+
+  // Which way the evidence leans
+  let lean = "Toss-up", leanColor = "var(--text-muted)";
+  if (score >= 7.5 && platforms >= 2)      { lean = "Evidence leans YES"; leanColor = "var(--green)"; }
+  else if (score >= 6.5)                    { lean = "Leans YES, with risk"; leanColor = "var(--accent)"; }
+  else if (score < 5 || platforms === 1)    { lean = "Evidence leans NO"; leanColor = "var(--red)"; }
+
+  const summary = `${strength} signal, ${conf}, ${move}.`;
+
+  return { scoreColor, momentum, momentumColor, lean, leanColor, summary };
+}
+
 export default function MarketPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [market, setMarket]   = useState<any>(null);
@@ -157,32 +189,58 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
 
       <hr className="rule" />
 
-      {/* ── Trend Context ───────────────────────────────────────────────── */}
-      {trend && (
-        <div
-          className="px-6 py-5"
-          style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}
-        >
-          <p className="text-[9px] tracking-[0.3em] uppercase mb-3" style={{ color: "var(--text-faint)" }}>
-            Underlying Trend
-          </p>
-          <Link href={`/trends/${trend.id}`} className="group">
-            <div className="flex items-start gap-4">
-              <ScoreBadge score={trend.ai_score} />
-              <div>
-                <p className="serif text-lg font-light group-hover:text-white transition-colors">
-                  {trend.name}
+      {/* ── The Signal (form guide) ─────────────────────────────────────── */}
+      {trend && (() => {
+        const read = signalRead(trend);
+        return (
+          <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
+            <div className="px-6 pt-5 pb-4 flex items-center justify-between">
+              <p className="text-[9px] tracking-[0.3em] uppercase" style={{ color: "var(--accent)" }}>
+                ✦ The Signal — what the data says
+              </p>
+              <Link href={`/trends/${trend.id}`} className="text-[9px] tracking-widest uppercase"
+                style={{ color: "var(--text-faint)" }}>
+                Full read →
+              </Link>
+            </div>
+
+            {/* Metrics row */}
+            <div className="grid grid-cols-3 gap-px" style={{ background: "var(--border)" }}>
+              <div className="px-5 py-4" style={{ background: "var(--bg-card)" }}>
+                <p className="text-[8px] tracking-widest uppercase mb-1.5" style={{ color: "var(--text-faint)" }}>AI Score</p>
+                <p className="serif text-3xl font-light" style={{ color: read.scoreColor }}>
+                  {trend.ai_score.toFixed(1)}<span className="text-sm" style={{ color: "var(--text-faint)" }}>/10</span>
                 </p>
-                {trend.ai_thesis && (
-                  <p className="text-xs mt-1 line-clamp-2" style={{ color: "var(--text-muted)" }}>
-                    {trend.ai_thesis}
-                  </p>
-                )}
+              </div>
+              <div className="px-5 py-4" style={{ background: "var(--bg-card)" }}>
+                <p className="text-[8px] tracking-widest uppercase mb-1.5" style={{ color: "var(--text-faint)" }}>Momentum</p>
+                <p className="serif text-2xl font-light" style={{ color: read.momentumColor }}>
+                  {read.momentum}
+                </p>
+              </div>
+              <div className="px-5 py-4" style={{ background: "var(--bg-card)" }}>
+                <p className="text-[8px] tracking-widest uppercase mb-1.5" style={{ color: "var(--text-faint)" }}>Confirmation</p>
+                <p className="serif text-2xl font-light" style={{ color: (trend.platform_count || 1) >= 2 ? "var(--accent)" : "var(--text-muted)" }}>
+                  {trend.platform_count || 1}<span className="text-xs" style={{ color: "var(--text-faint)" }}> {(trend.platform_count || 1) === 1 ? "source" : "sources"}</span>
+                </p>
               </div>
             </div>
-          </Link>
-        </div>
-      )}
+
+            {/* Verdict line */}
+            <div className="px-6 py-4" style={{ borderTop: "1px solid var(--border)" }}>
+              <p className="text-sm leading-relaxed">
+                <span style={{ color: read.leanColor, fontWeight: 500 }}>{read.lean}</span>
+                <span style={{ color: "var(--text-muted)" }}> — {read.summary}</span>
+              </p>
+              {trend.ai_thesis && (
+                <p className="text-xs mt-2 leading-relaxed" style={{ color: "var(--text-faint)" }}>
+                  {trend.ai_thesis}
+                </p>
+              )}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── Price Panel ─────────────────────────────────────────────────── */}
       <div>
@@ -319,6 +377,15 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
                 </p>
               </div>
             </div>
+
+            {/* Evidence reminder at the moment of decision */}
+            {trend && (
+              <p className="text-[10px] leading-relaxed text-center px-2" style={{ color: "var(--text-faint)" }}>
+                Bet what the data says, not what you want. {" "}
+                <span style={{ color: signalRead(trend).leanColor }}>{signalRead(trend).lean}</span>
+                {" "}· score {trend.ai_score.toFixed(1)} · {trend.platform_count || 1} {(trend.platform_count || 1) === 1 ? "source" : "sources"}
+              </p>
+            )}
 
             {/* Buttons */}
             <div className="grid grid-cols-2 gap-3">

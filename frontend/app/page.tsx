@@ -69,12 +69,13 @@ export default async function Home() {
           Fashion Prediction Intelligence
         </p>
         <h1 className="serif text-6xl md:text-7xl font-light leading-[1.05] mb-6">
-          Trade trends<br />
-          <em className="score-glow" style={{ color: "var(--accent)" }}>before</em> they break.
+          Call the trend<br />
+          <em className="score-glow" style={{ color: "var(--accent)" }}>before</em> it breaks.
         </h1>
         <p className="text-base max-w-lg leading-relaxed" style={{ color: "var(--text-muted)" }}>
-          Our AI monitors underground fashion signals across TikTok, Pinterest, Reddit, and editorial
-          sources. Scored by velocity, novelty & cross-platform confirmation. You trade what goes mainstream.
+          Every market comes with the data — score, momentum, cross-platform confirmation.
+          Read the signals, predict what goes mainstream, and prove your eye against everyone else.
+          Not what you <em>want</em> to trend. What <em>will</em>.
         </p>
 
         {/* Stats row */}

@@ -48,8 +48,9 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
             of <span style={{ fontStyle: "italic", color: "var(--accent)" }}>fashion</span>.
           </h1>
           <p className="text-base leading-relaxed mt-8 mx-auto" style={{ color: "var(--text-muted)", maxWidth: 460 }}>
-            Underground aesthetics become tradeable markets. Spot what goes mainstream
-            before it does — and bet on it. Read the signals. Trade wisely.
+            Every emerging aesthetic becomes a market — backed by real signal data.
+            Predict what goes mainstream before it does, and prove your eye against everyone else.
+            Read the signals. Trade wisely.
           </p>
           <button onClick={() => setEntered(true)} style={{ ...primaryBtn, width: "auto", padding: "15px 48px", marginTop: 44 }}>
             Enter the market →
