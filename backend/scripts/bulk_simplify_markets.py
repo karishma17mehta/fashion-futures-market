@@ -23,7 +23,13 @@ if str(_BACKEND) not in sys.path:
     sys.path.insert(0, str(_BACKEND))
 
 from dotenv import load_dotenv
+# Load .env (override=True so the real ANTHROPIC_API_KEY wins over any stale
+# shell value), but PRESERVE a DATABASE_URL explicitly passed on the command
+# line (e.g. pointing at the cloud DB) so it isn't clobbered by local .env.
+_cli_db = os.environ.get("DATABASE_URL")
 load_dotenv(_BACKEND / ".env", override=True)
+if _cli_db:
+    os.environ["DATABASE_URL"] = _cli_db
 
 import anthropic
 from db.session import SessionLocal
