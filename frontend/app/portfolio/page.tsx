@@ -87,7 +87,7 @@ export default function PortfolioPage() {
     });
   }, [authUser?.id]);
 
-  // Guest / logged-out visitor — no portfolio to show.
+  // Guest / logged-out visitor - no portfolio to show.
   if (!authUser) {
     return (
       <div className="max-w-2xl mx-auto pt-10 fade-up">
@@ -165,7 +165,7 @@ export default function PortfolioPage() {
           },
           {
             label: "Accuracy",
-            value: user?.accuracy_rate ? `${(user.accuracy_rate * 100).toFixed(0)}%` : "—",
+            value: user?.accuracy_rate ? `${(user.accuracy_rate * 100).toFixed(0)}%` : "-",
             unit: "",
             color: "var(--text)",
           },
@@ -201,7 +201,7 @@ export default function PortfolioPage() {
           <div className="text-right">
             <p className="text-[9px] tracking-widest uppercase" style={{ color: "var(--text-faint)" }}>Win Rate</p>
             <p className="serif text-xl font-light" style={{ color: user.accuracy_rate > 0.5 ? "var(--green)" : "var(--text)" }}>
-              {user.accuracy_rate ? `${(user.accuracy_rate * 100).toFixed(0)}%` : "—"}
+              {user.accuracy_rate ? `${(user.accuracy_rate * 100).toFixed(0)}%` : "-"}
             </p>
           </div>
         </div>

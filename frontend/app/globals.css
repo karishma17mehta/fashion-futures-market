@@ -7,8 +7,8 @@
   --border: rgba(255,255,255,0.09);
   --border-hover: rgba(255,255,255,0.22);
   --text: #f5f0eb;
-  --text-muted: rgba(245,240,235,0.7);   /* was 0.4 — much more readable */
-  --text-faint: rgba(245,240,235,0.38);  /* was 0.2 — labels now visible */
+  --text-muted: rgba(245,240,235,0.7);   /* was 0.4 - much more readable */
+  --text-faint: rgba(245,240,235,0.38);  /* was 0.2 - labels now visible */
   --accent: #d4a853;                     /* slightly brighter gold */
   --accent-dim: rgba(212,168,83,0.15);
   --red: #e86060;
@@ -36,7 +36,7 @@ body {
   border-top: 1px solid var(--border);
 }
 
-/* Hover tile — replaces inline onMouseEnter/Leave in server components */
+/* Hover tile - replaces inline onMouseEnter/Leave in server components */
 .hover-tile {
   background: var(--bg-card);
   transition: background 150ms ease;

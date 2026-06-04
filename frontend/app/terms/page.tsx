@@ -66,7 +66,7 @@ export default function TermsPage() {
       <Section title="Privacy Policy">
         <P><B>What we collect.</B> When you create an account we store your email address, your chosen
           display name, and a securely hashed version of your password (we never store your password in
-          plain text). As you use the Service we record your in-game activity — trades, points, positions,
+          plain text). As you use the Service we record your in-game activity - trades, points, positions,
           badges, and the time you were last active.</P>
         <P><B>How we use it.</B> We use this data to operate the game (run your portfolio, leaderboard,
           and alerts) and to understand aggregate usage patterns so we can improve the product. Your email

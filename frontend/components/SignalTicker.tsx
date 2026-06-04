@@ -1,6 +1,6 @@
 "use client";
 /**
- * SignalTicker — horizontally scrolling live signal feed.
+ * SignalTicker - horizontally scrolling live signal feed.
  * Shows the most recent detected trends in a Bloomberg-style ticker.
  */
 import { useEffect, useState } from "react";

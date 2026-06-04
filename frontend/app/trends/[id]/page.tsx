@@ -12,7 +12,7 @@ import { notFound } from "next/navigation";
 
 export const revalidate = 30;
 
-// Score component estimator — derives likely component scores from available data.
+// Score component estimator - derives likely component scores from available data.
 // In a future iteration these would be stored directly from the formula run.
 function estimateComponents(trend: any): Record<string, number> | undefined {
   const vel = trend.signal_velocity ?? 0;
@@ -136,7 +136,7 @@ export default async function TrendPage({ params }: { params: Promise<{ id: stri
                 <VelocityIndicator velocity={trend.signal_velocity} />
               </div>
             ) : (
-              <p className="serif text-3xl font-light" style={{ color: "var(--text-faint)" }}>—</p>
+              <p className="serif text-3xl font-light" style={{ color: "var(--text-faint)" }}>-</p>
             )}
           </div>
           <p className="text-[9px] tracking-widest uppercase mb-3" style={{ color: "var(--text-faint)" }}>

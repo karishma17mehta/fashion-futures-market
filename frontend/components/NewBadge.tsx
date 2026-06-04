@@ -1,5 +1,5 @@
 /**
- * NewBadge — shows a pulsing "NEW" indicator for trends detected in the last 48h.
+ * NewBadge - shows a pulsing "NEW" indicator for trends detected in the last 48h.
  */
 export default function NewBadge({ createdAt }: { createdAt: string }) {
   const ageMs = Date.now() - new Date(createdAt).getTime();

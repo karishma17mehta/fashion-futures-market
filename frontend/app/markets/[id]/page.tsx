@@ -48,7 +48,7 @@ function MiniPriceChart({ history }: { history: { yes: number }[] }) {
   );
 }
 
-// Turns the trend's data into a "form guide" read — so bettors reason from
+// Turns the trend's data into a "form guide" read - so bettors reason from
 // evidence (what WILL happen) rather than taste (what they WANT to happen).
 function signalRead(trend: any) {
   const score = trend.ai_score ?? 5;
@@ -196,7 +196,7 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
           <div style={{ background: "var(--bg-card)", border: "1px solid var(--border)" }}>
             <div className="px-6 pt-5 pb-4 flex items-center justify-between">
               <p className="text-[9px] tracking-[0.3em] uppercase" style={{ color: "var(--accent)" }}>
-                ✦ The Signal — what the data says
+                ✦ The Signal - what the data says
               </p>
               <Link href={`/trends/${trend.id}`} className="text-[9px] tracking-widest uppercase"
                 style={{ color: "var(--text-faint)" }}>
@@ -230,7 +230,7 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
             <div className="px-6 py-4" style={{ borderTop: "1px solid var(--border)" }}>
               <p className="text-sm leading-relaxed">
                 <span style={{ color: read.leanColor, fontWeight: 500 }}>{read.lean}</span>
-                <span style={{ color: "var(--text-muted)" }}> — {read.summary}</span>
+                <span style={{ color: "var(--text-muted)" }}> - {read.summary}</span>
               </p>
               {trend.ai_thesis && (
                 <p className="text-xs mt-2 leading-relaxed" style={{ color: "var(--text-faint)" }}>
@@ -265,7 +265,7 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
         <div className="grid grid-cols-2 gap-px mt-4" style={{ background: "var(--border)" }}>
           <div className="px-6 py-5" style={{ background: "var(--bg-card)" }}>
             <p className="text-[9px] tracking-widest uppercase mb-2" style={{ color: "var(--text-faint)" }}>
-              YES — Will Break
+              YES - Will Break
             </p>
             <p className="serif text-5xl font-light" style={{ color: "var(--green)" }}>
               {yesPrice}¢
@@ -277,7 +277,7 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
           <div className="px-6 py-5 flex flex-col justify-between" style={{ background: "var(--bg-card)" }}>
             <div>
               <p className="text-[9px] tracking-widest uppercase mb-2" style={{ color: "var(--text-faint)" }}>
-                NO — Will Fade
+                NO - Will Fade
               </p>
               <p className="serif text-5xl font-light" style={{ color: "var(--red)" }}>
                 {noPrice}¢
@@ -296,7 +296,7 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
       </div>
 
       {/* ── Trade ───────────────────────────────────────────────────────── */}
-      {/* Guest — prompt to sign up before trading */}
+      {/* Guest - prompt to sign up before trading */}
       {isOpen && !user && (
         <div>
           <p className="text-[9px] tracking-[0.3em] uppercase mb-5" style={{ color: "var(--text-muted)" }}>
@@ -401,7 +401,7 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
                 onMouseEnter={e => (e.currentTarget.style.background = "rgba(91,171,122,0.18)")}
                 onMouseLeave={e => (e.currentTarget.style.background = "rgba(91,171,122,0.08)")}
               >
-                {loading ? "…" : `Yes — It Breaks (${yesPrice}¢)`}
+                {loading ? "…" : `Yes - It Breaks (${yesPrice}¢)`}
               </button>
               <button
                 onClick={() => trade("no")}
@@ -415,7 +415,7 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
                 onMouseEnter={e => (e.currentTarget.style.background = "rgba(224,82,82,0.18)")}
                 onMouseLeave={e => (e.currentTarget.style.background = "rgba(224,82,82,0.08)")}
               >
-                {loading ? "…" : `No — It Fades (${noPrice}¢)`}
+                {loading ? "…" : `No - It Fades (${noPrice}¢)`}
               </button>
             </div>
 

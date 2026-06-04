@@ -46,7 +46,7 @@ export default function AlertsPage() {
       const d = await r.json();
       setAlerts(d.alerts || []);
     } catch {
-      setError("Could not load alerts — is the backend running?");
+      setError("Could not load alerts - is the backend running?");
     } finally {
       setLoading(false);
     }
@@ -83,7 +83,7 @@ export default function AlertsPage() {
         await loadAlerts();
       }
     } catch {
-      setError("Network error — backend may be offline");
+      setError("Network error - backend may be offline");
     } finally {
       setCreating(false);
     }
@@ -99,7 +99,7 @@ export default function AlertsPage() {
     }
   };
 
-  // Guest / logged-out visitor — alerts need an account.
+  // Guest / logged-out visitor - alerts need an account.
   if (!user) {
     return (
       <div className="max-w-2xl mx-auto pt-10 fade-up">
@@ -168,7 +168,7 @@ export default function AlertsPage() {
           <div>
             <label className="block text-[9px] tracking-widest uppercase mb-2"
               style={{ color: "var(--text-faint)" }}>
-              Min Score — {minScore.toFixed(1)}
+              Min Score - {minScore.toFixed(1)}
             </label>
             <input
               type="range"
@@ -353,7 +353,7 @@ export default function AlertsPage() {
           </div>
           <div className="flex gap-3">
             <span style={{ color: "var(--accent)" }}>04</span>
-            <p>Use <code>*</code> as the trend name to watch all trends above your score threshold — great for discovering new signals.</p>
+            <p>Use <code>*</code> as the trend name to watch all trends above your score threshold - great for discovering new signals.</p>
           </div>
         </div>
       </div>

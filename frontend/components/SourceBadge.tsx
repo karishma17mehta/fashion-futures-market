@@ -1,5 +1,5 @@
 /**
- * SourceBadge — shows which platform detected this trend.
+ * SourceBadge - shows which platform detected this trend.
  * Distinct color per source so you can instantly tell signal origin.
  */
 

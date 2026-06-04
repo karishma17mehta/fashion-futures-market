@@ -1,5 +1,5 @@
 /**
- * VelocityIndicator — shows signal_velocity as a directional arrow + value.
+ * VelocityIndicator - shows signal_velocity as a directional arrow + value.
  * Green up arrow for rising, red down for fading, neutral for flat.
  */
 export default function VelocityIndicator({ velocity }: { velocity: number }) {

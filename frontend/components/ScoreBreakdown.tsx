@@ -1,13 +1,13 @@
 /**
- * ScoreBreakdown — visualizes the 5 scoring components as labeled bars.
+ * ScoreBreakdown - visualizes the 5 scoring components as labeled bars.
  * Used on the trend detail page to show WHY a trend scored what it scored.
  *
  * Components map to the formula weights:
- *   velocity     30%  — growth speed
- *   acceleration 20%  — growth acceleration
- *   novelty      25%  — freshness
- *   volume       10%  — search mass
- *   cross_platform 15% — multi-source confirmation
+ *   velocity     30%  - growth speed
+ *   acceleration 20%  - growth acceleration
+ *   novelty      25%  - freshness
+ *   volume       10%  - search mass
+ *   cross_platform 15% - multi-source confirmation
  */
 
 const COMPONENTS = [

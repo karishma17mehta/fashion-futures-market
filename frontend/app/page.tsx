@@ -73,7 +73,7 @@ export default async function Home() {
           <em className="score-glow" style={{ color: "var(--accent)" }}>before</em> it breaks.
         </h1>
         <p className="text-base max-w-lg leading-relaxed" style={{ color: "var(--text-muted)" }}>
-          Every market comes with the data — score, momentum, cross-platform confirmation.
+          Every market comes with the data - score, momentum, cross-platform confirmation.
           Read the signals, predict what goes mainstream, and prove your eye against everyone else.
           Not what you <em>want</em> to trend. What <em>will</em>.
         </p>

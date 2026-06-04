@@ -48,7 +48,7 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
             of <span style={{ fontStyle: "italic", color: "var(--accent)" }}>fashion</span>.
           </h1>
           <p className="text-base leading-relaxed mt-8 mx-auto" style={{ color: "var(--text-muted)", maxWidth: 460 }}>
-            Every emerging aesthetic becomes a market — backed by real signal data.
+            Every emerging aesthetic becomes a market - backed by real signal data.
             Predict what goes mainstream before it does, and prove your eye against everyone else.
             Read the signals. Trade wisely.
           </p>
@@ -118,7 +118,7 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
             <Link href="/terms" style={{ color: "var(--text-muted)", textDecoration: "underline" }}>
               Terms &amp; Privacy
             </Link>
-            . Play money only — no real wagering.
+            . Play money only - no real wagering.
           </p>
         )}
 
@@ -132,7 +132,7 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
         <div style={{ marginTop: 24, paddingTop: 20, borderTop: "1px solid var(--border)", textAlign: "center" }}>
           <button onClick={continueAsGuest} className="text-xs tracking-widest uppercase transition-colors"
             style={{ color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
-            Just browsing — explore without an account →
+            Just browsing - explore without an account →
           </button>
         </div>
       </div>
