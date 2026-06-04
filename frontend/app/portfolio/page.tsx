@@ -6,6 +6,7 @@ import PriceBar from "@/components/PriceBar";
 import ScoreBadge from "@/components/ScoreBadge";
 import SourceBadge from "@/components/SourceBadge";
 import { useAuth } from "@/lib/auth";
+import GuestPrompt from "@/components/GuestPrompt";
 
 type Position = {
   id: string;
@@ -85,6 +86,18 @@ export default function PortfolioPage() {
       setLoading(false);
     });
   }, [authUser?.id]);
+
+  // Guest / logged-out visitor — no portfolio to show.
+  if (!authUser) {
+    return (
+      <div className="max-w-2xl mx-auto pt-10 fade-up">
+        <GuestPrompt
+          title="Your portfolio lives here"
+          body="Create an account to place trades, track your positions, and watch your points grow as your calls pay off."
+        />
+      </div>
+    );
+  }
 
   const positions: Position[] = data?.positions || [];
   const summary = data?.summary || {};

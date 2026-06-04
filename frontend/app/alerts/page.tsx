@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
+import GuestPrompt from "@/components/GuestPrompt";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -97,6 +98,18 @@ export default function AlertsPage() {
       setDeleting(null);
     }
   };
+
+  // Guest / logged-out visitor — alerts need an account.
+  if (!user) {
+    return (
+      <div className="max-w-2xl mx-auto pt-10 fade-up">
+        <GuestPrompt
+          title="Never miss a breakout"
+          body="Create an account to set alerts and get notified the moment a trend crosses your score threshold."
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl space-y-10 pt-4 fade-up">

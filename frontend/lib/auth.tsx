@@ -25,10 +25,13 @@ type Result = { ok: boolean; error?: string };
 type AuthContextType = {
   user: AuthUser | null;
   loading: boolean;
+  isGuest: boolean;
   signup: (email: string, username: string, password: string) => Promise<Result>;
   login: (email: string, password: string) => Promise<Result>;
   logout: () => void;
   refresh: () => Promise<void>;
+  continueAsGuest: () => void;
+  exitGuest: () => void;   // leave guest mode → show the auth screen
 };
 
 const TOKEN_KEY = "ff_token";
@@ -47,6 +50,10 @@ function errMessage(body: any, fallback: string): string {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isGuest, setIsGuest] = useState(false);
+
+  const continueAsGuest = useCallback(() => setIsGuest(true), []);
+  const exitGuest = useCallback(() => setIsGuest(false), []);
 
   // Restore session from token on mount.
   useEffect(() => {
@@ -66,6 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (ok && body.token) {
       localStorage.setItem(TOKEN_KEY, body.token);
       setUser(body.user as AuthUser);
+      setIsGuest(false);
       return { ok: true };
     }
     return { ok: false, error: errMessage(body, "Could not create your account.") };
@@ -76,6 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (ok && body.token) {
       localStorage.setItem(TOKEN_KEY, body.token);
       setUser(body.user as AuthUser);
+      setIsGuest(false);
       return { ok: true };
     }
     return { ok: false, error: errMessage(body, "Could not log you in.") };
@@ -94,7 +103,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, signup, login, logout, refresh }}>
+    <AuthContext.Provider value={{ user, loading, isGuest, signup, login, logout, refresh, continueAsGuest, exitGuest }}>
       {children}
     </AuthContext.Provider>
   );

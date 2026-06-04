@@ -7,6 +7,7 @@ import ScoreBadge from "@/components/ScoreBadge";
 import Link from "next/link";
 import { use } from "react";
 import { useAuth } from "@/lib/auth";
+import GuestPrompt from "@/components/GuestPrompt";
 
 // Price history stored in memory for this session
 let priceHistory: { yes: number; no: number; ts: number }[] = [];
@@ -234,7 +235,20 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
       </div>
 
       {/* ── Trade ───────────────────────────────────────────────────────── */}
-      {isOpen && (
+      {/* Guest — prompt to sign up before trading */}
+      {isOpen && !user && (
+        <div>
+          <p className="text-[9px] tracking-[0.3em] uppercase mb-5" style={{ color: "var(--text-muted)" }}>
+            Place a Trade
+          </p>
+          <GuestPrompt
+            title="Sign up to trade this market"
+            body="Create an account to place a bet on this trend. You'll start with 1,000 points."
+          />
+        </div>
+      )}
+
+      {isOpen && user && (
         <div>
           <p className="text-[9px] tracking-[0.3em] uppercase mb-5" style={{ color: "var(--text-muted)" }}>
             Place a Trade

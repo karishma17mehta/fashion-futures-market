@@ -1,15 +1,16 @@
 "use client";
 /**
- * Gates the app behind email+password auth.
- * - Restoring session: minimal loader.
- * - No user: login / signup screen (toggle).
- * - User present: renders the app.
+ * Entry flow for non-authenticated visitors:
+ *   1. Dramatic splash  ("Trade wisely") → Enter
+ *   2. Login / signup    (or "just browsing" → guest mode)
+ * Logged-in users and guests fall straight through to the app.
  */
 import { useState } from "react";
 import { useAuth } from "@/lib/auth";
 
 export default function AuthGate({ children }: { children: React.ReactNode }) {
-  const { user, loading, login, signup } = useAuth();
+  const { user, loading, isGuest, login, signup, continueAsGuest } = useAuth();
+  const [entered, setEntered] = useState(false);
   const [mode, setMode] = useState<"login" | "signup">("signup");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -25,27 +26,51 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (user) return <>{children}</>;
+  // Logged in OR browsing as guest → show the app.
+  if (user || isGuest) return <>{children}</>;
 
+  // ── Splash ──────────────────────────────────────────────────────────────
+  if (!entered) {
+    return (
+      <div style={splashWrap}>
+        <div className="fade-up" style={{ textAlign: "center", maxWidth: 620, padding: 24 }}>
+          <p className="text-[10px] tracking-[0.4em] uppercase mb-8" style={{ color: "var(--text-faint)" }}>
+            Fashion Prediction Intelligence
+          </p>
+          <h1 className="serif font-light" style={{ fontSize: "clamp(44px, 8vw, 92px)", lineHeight: 1.05, letterSpacing: "-0.01em" }}>
+            Trade the future<br />
+            of <span style={{ fontStyle: "italic", color: "var(--accent)" }}>fashion</span>.
+          </h1>
+          <p className="text-base leading-relaxed mt-8 mx-auto" style={{ color: "var(--text-muted)", maxWidth: 460 }}>
+            Underground aesthetics become tradeable markets. Spot what goes mainstream
+            before it does — and bet on it. Read the signals. Trade wisely.
+          </p>
+          <button onClick={() => setEntered(true)} style={{ ...primaryBtn, width: "auto", padding: "15px 48px", marginTop: 44 }}>
+            Enter the market →
+          </button>
+          <p className="text-[10px] tracking-widest uppercase mt-6" style={{ color: "var(--text-faint)" }}>
+            Play money · No risk · Just foresight
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Auth ────────────────────────────────────────────────────────────────
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setBusy(true);
-    const res = mode === "signup"
-      ? await signup(email, name, password)
-      : await login(email, password);
+    const res = mode === "signup" ? await signup(email, name, password) : await login(email, password);
     setBusy(false);
     if (!res.ok) setError(res.error || "Something went wrong.");
-    // On success the provider sets `user`, which swaps in the app automatically.
   };
-
   const swap = (m: "login" | "signup") => { setMode(m); setError(""); };
 
   return (
     <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: "var(--bg)", padding: 24 }}>
       <div style={{ width: "100%", maxWidth: 420 }} className="fade-up">
-        {/* Wordmark */}
-        <div style={{ textAlign: "center", marginBottom: 36 }}>
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
           <p className="serif italic text-3xl font-light" style={{ color: "var(--accent)" }}>Fashion Futures</p>
           <p className="text-[10px] tracking-[0.3em] uppercase mt-2" style={{ color: "var(--text-faint)" }}>
             Prediction Intelligence
@@ -53,34 +78,25 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
         </div>
 
         <h1 className="serif text-3xl font-light mb-3" style={{ textAlign: "center" }}>
-          {mode === "signup" ? "Trade trends before they break" : "Welcome back"}
+          {mode === "signup" ? "Create your account" : "Welcome back"}
         </h1>
         <p className="text-sm leading-relaxed mb-7" style={{ color: "var(--text-muted)", textAlign: "center" }}>
           {mode === "signup"
-            ? "Create an account and get 1,000 points to bet on emerging fashion trends."
+            ? "Start with 1,000 points to bet on emerging fashion trends."
             : "Log in to your portfolio and points."}
         </p>
 
         <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <input
-            autoFocus type="email" value={email}
-            onChange={(e) => { setEmail(e.target.value); setError(""); }}
-            placeholder="Email" autoComplete="email" style={inputStyle(false)}
-          />
+          <input autoFocus type="email" value={email} autoComplete="email"
+            onChange={(e) => { setEmail(e.target.value); setError(""); }} placeholder="Email" style={inputStyle(false)} />
           {mode === "signup" && (
-            <input
-              type="text" value={name} maxLength={24}
+            <input type="text" value={name} maxLength={24}
               onChange={(e) => { setName(e.target.value); setError(""); }}
-              placeholder="Display name (shown on leaderboard)" style={inputStyle(false)}
-            />
+              placeholder="Display name (shown on leaderboard)" style={inputStyle(false)} />
           )}
-          <input
-            type="password" value={password}
-            onChange={(e) => { setPassword(e.target.value); setError(""); }}
-            placeholder="Password"
+          <input type="password" value={password}
             autoComplete={mode === "signup" ? "new-password" : "current-password"}
-            style={inputStyle(!!error)}
-          />
+            onChange={(e) => { setPassword(e.target.value); setError(""); }} placeholder="Password" style={inputStyle(!!error)} />
 
           {error && <p className="text-xs" style={{ color: "#e05a5a", textAlign: "center" }}>{error}</p>}
 
@@ -89,59 +105,47 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
           </button>
         </form>
 
-        {/* Toggle */}
         <p className="text-xs mt-6" style={{ color: "var(--text-faint)", textAlign: "center" }}>
-          {mode === "signup" ? (
-            <>Already have an account?{" "}
-              <button onClick={() => swap("login")} style={linkBtn}>Log in</button>
-            </>
-          ) : (
-            <>New here?{" "}
-              <button onClick={() => swap("signup")} style={linkBtn}>Create an account</button>
-            </>
-          )}
+          {mode === "signup"
+            ? <>Already have an account? <button onClick={() => swap("login")} style={linkBtn}>Log in</button></>
+            : <>New here? <button onClick={() => swap("signup")} style={linkBtn}>Create an account</button></>}
         </p>
+
+        {/* Guest path */}
+        <div style={{ marginTop: 24, paddingTop: 20, borderTop: "1px solid var(--border)", textAlign: "center" }}>
+          <button onClick={continueAsGuest} className="text-xs tracking-widest uppercase transition-colors"
+            style={{ color: "var(--text-muted)", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
+            Just browsing — explore without an account →
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
+const splashWrap: React.CSSProperties = {
+  minHeight: "100vh",
+  display: "grid",
+  placeItems: "center",
+  background: "radial-gradient(ellipse at 50% 35%, rgba(212,168,83,0.08), var(--bg) 60%)",
+};
+
 function inputStyle(err: boolean): React.CSSProperties {
   return {
-    width: "100%",
-    background: "var(--bg-card)",
+    width: "100%", background: "var(--bg-card)",
     border: `1px solid ${err ? "#e05a5a" : "var(--border)"}`,
-    color: "var(--text)",
-    padding: "13px 16px",
-    fontSize: 15,
-    fontFamily: "inherit",
-    outline: "none",
-    borderRadius: 3,
+    color: "var(--text)", padding: "13px 16px", fontSize: 15,
+    fontFamily: "inherit", outline: "none", borderRadius: 3,
   };
 }
 
 const primaryBtn: React.CSSProperties = {
-  width: "100%",
-  background: "var(--accent)",
-  color: "#080808",
-  border: "none",
-  padding: "13px 24px",
-  fontSize: 11,
-  letterSpacing: "0.2em",
-  textTransform: "uppercase",
-  fontFamily: "inherit",
-  borderRadius: 3,
-  fontWeight: 500,
-  marginTop: 4,
+  width: "100%", background: "var(--accent)", color: "#080808", border: "none",
+  padding: "13px 24px", fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase",
+  fontFamily: "inherit", borderRadius: 3, fontWeight: 500, marginTop: 4, cursor: "pointer",
 };
 
 const linkBtn: React.CSSProperties = {
-  background: "none",
-  border: "none",
-  color: "var(--accent)",
-  cursor: "pointer",
-  fontFamily: "inherit",
-  fontSize: "inherit",
-  padding: 0,
-  textDecoration: "underline",
+  background: "none", border: "none", color: "var(--accent)", cursor: "pointer",
+  fontFamily: "inherit", fontSize: "inherit", padding: 0, textDecoration: "underline",
 };
