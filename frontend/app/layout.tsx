@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import { AuthProvider } from "@/lib/auth";
@@ -27,12 +28,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <main className="max-w-5xl mx-auto px-5 py-10">{children}</main>
             <footer className="max-w-5xl mx-auto px-5 py-10 mt-16">
               <hr className="rule mb-6" />
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-4">
                 <span className="serif italic text-lg" style={{ color: "var(--accent)" }}>Fashion Futures</span>
-                <span className="text-xs tracking-widest uppercase" style={{ color: "var(--text-faint)" }}>
-                  Prediction Intelligence · 2026
-                </span>
+                <div className="flex items-center gap-5">
+                  <Link
+                    href="/terms"
+                    className="text-[10px] tracking-widest uppercase transition-colors"
+                    style={{ color: "var(--text-faint)" }}
+                  >
+                    Terms &amp; Privacy
+                  </Link>
+                  <span className="text-xs tracking-widest uppercase" style={{ color: "var(--text-faint)" }}>
+                    Prediction Intelligence · 2026
+                  </span>
+                </div>
               </div>
+              <p className="text-[10px] mt-4" style={{ color: "var(--text-faint)" }}>
+                Play-money game for entertainment &amp; research · No real money · Not financial advice
+              </p>
             </footer>
           </AuthGate>
         </AuthProvider>

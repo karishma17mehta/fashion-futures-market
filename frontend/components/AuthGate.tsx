@@ -6,10 +6,16 @@
  * Logged-in users and guests fall straight through to the app.
  */
 import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth";
+
+// Routes viewable without signing in (e.g. legal pages).
+const PUBLIC_PATHS = ["/terms"];
 
 export default function AuthGate({ children }: { children: React.ReactNode }) {
   const { user, loading, isGuest, login, signup, continueAsGuest } = useAuth();
+  const pathname = usePathname();
   const [entered, setEntered] = useState(false);
   const [mode, setMode] = useState<"login" | "signup">("signup");
   const [email, setEmail] = useState("");
@@ -26,8 +32,8 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // Logged in OR browsing as guest → show the app.
-  if (user || isGuest) return <>{children}</>;
+  // Logged in OR browsing as guest OR on a public page → show the app.
+  if (user || isGuest || PUBLIC_PATHS.includes(pathname)) return <>{children}</>;
 
   // ── Splash ──────────────────────────────────────────────────────────────
   if (!entered) {
@@ -104,6 +110,16 @@ export default function AuthGate({ children }: { children: React.ReactNode }) {
             {busy ? "Please wait…" : mode === "signup" ? "Create account →" : "Log in →"}
           </button>
         </form>
+
+        {mode === "signup" && (
+          <p className="text-[10px] leading-relaxed mt-4" style={{ color: "var(--text-faint)", textAlign: "center" }}>
+            By creating an account you agree to our{" "}
+            <Link href="/terms" style={{ color: "var(--text-muted)", textDecoration: "underline" }}>
+              Terms &amp; Privacy
+            </Link>
+            . Play money only — no real wagering.
+          </p>
+        )}
 
         <p className="text-xs mt-6" style={{ color: "var(--text-faint)", textAlign: "center" }}>
           {mode === "signup"
