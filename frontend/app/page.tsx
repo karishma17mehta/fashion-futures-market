@@ -7,7 +7,8 @@ import VelocityIndicator from "@/components/VelocityIndicator";
 import NewBadge from "@/components/NewBadge";
 import SignalTicker from "@/components/SignalTicker";
 
-export const revalidate = 60; // ISR: refresh every 60s
+// Always render fresh so prices reflect the latest trades (no stale cache).
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const [marketsData, trendsData, allTrendsData] = await Promise.all([

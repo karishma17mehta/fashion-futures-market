@@ -6,6 +6,7 @@ import SourceBadge from "@/components/SourceBadge";
 import ScoreBadge from "@/components/ScoreBadge";
 import Link from "next/link";
 import { use } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import GuestPrompt from "@/components/GuestPrompt";
 
@@ -58,6 +59,7 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const { user, refresh } = useAuth();
   const userId = user?.id;
+  const router = useRouter();
 
   const loadMarket = useCallback(async () => {
     const m = await fetchMarket(id);
@@ -88,7 +90,8 @@ export default function MarketPage({ params }: { params: Promise<{ id: string }>
     const res = await placeTrade(id, userId, position, amount);
     setResult(res);
     await loadMarket();
-    await refresh();  // update points shown in the nav
+    await refresh();          // update points shown in the nav
+    router.refresh();         // bust router cache so homepage/markets show new price
     setLoading(false);
   }
 
