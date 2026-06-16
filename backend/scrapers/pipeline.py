@@ -23,7 +23,7 @@ if str(_BACKEND_DIR) not in sys.path:
 from dotenv import load_dotenv
 load_dotenv(_BACKEND_DIR / ".env", override=True)
 
-from scrapers import trendhunter_scraper, google_trends_scraper, reddit_scraper, tiktok_scraper, pinterest_scraper
+from scrapers import trendhunter_scraper, google_trends_scraper, reddit_scraper, tiktok_scraper, pinterest_scraper, worldnews_scraper
 from scoring.formula import (
     TrendSignalData, compute_score,
     score_from_pinterest_row, score_from_google_trends,
@@ -347,6 +347,7 @@ def run_pipeline() -> None:
     raw_signals: list[dict] = []
     for name, fn in [
         ("Editorial RSS",  lambda: trendhunter_scraper.scrape()),
+        ("World News API", lambda: worldnews_scraper.scrape()),
         ("Google Trends",  lambda: google_trends_scraper.scrape()),
         ("Reddit",         lambda: reddit_scraper.run_reddit_scrape()),
         ("TikTok",         lambda: tiktok_scraper.scrape()),
@@ -384,7 +385,7 @@ def run_pipeline() -> None:
     # Source-aware thresholds:
     #   Data-backed sources (TikTok WoW%, Pinterest volume, Google Trends) → 5.0
     #   Editorial/qualitative sources (RSS, Reddit) → 4.0  (corroboration value)
-    _EDITORIAL_SOURCES = {"editorial_rss", "reddit"}
+    _EDITORIAL_SOURCES = {"editorial_rss", "reddit", "world_news"}
     def _min_score(signal: dict) -> float:
         return 4.0 if signal.get("source") in _EDITORIAL_SOURCES else 5.0
 
