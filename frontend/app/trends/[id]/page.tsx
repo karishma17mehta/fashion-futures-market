@@ -8,6 +8,7 @@ import NewBadge from "@/components/NewBadge";
 import ScoreBreakdown from "@/components/ScoreBreakdown";
 import ScoreSparkline from "@/components/ScoreSparkline";
 import CrossPlatformBadge from "@/components/CrossPlatformBadge";
+import BuyersView from "@/components/BuyersView";
 import { notFound } from "next/navigation";
 
 export const revalidate = 30;
@@ -151,6 +152,9 @@ export default async function TrendPage({ params }: { params: Promise<{ id: stri
           )}
         </div>
       </div>
+
+      {/* ── The Buyer's View ───────────────────────────────────────────── */}
+      <BuyersView trend={trend} />
 
       {/* ── Score History Sparkline ────────────────────────────────────── */}
       <div
