@@ -17,7 +17,7 @@ Set WORLD_NEWS_API_KEY in the environment. If it's missing, this no-ops
 Docs: https://worldnewsapi.com/docs/
 """
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import httpx
 
@@ -27,25 +27,32 @@ API_URL = "https://api.worldnewsapi.com/search-news"
 # (each search costs API points). Broaden later if coverage is thin.
 QUERIES = [
     "fashion trend",
-    "style trend OR viral fashion",
-    "new collection OR runway trend",
+    "street style OR summer fashion",
+    "runway OR outfit OR wardrobe",
 ]
 
-# Generic news words that aren't trends — used to drop obvious noise.
-_NOISE = {
-    "stock", "earnings", "lawsuit", "merger", "acquisition", "ceo steps",
-    "quarterly", "ipo", "layoffs",
-}
+# Fashion anchor words. We require one of these in the TITLE (not the body) —
+# body matching let generic words like "look/style/trend" leak non-fashion news.
+_ANCHORS = (
+    "fashion", "style", "outfit", "runway", "wardrobe", "aesthetic", "designer",
+    "dress", "denim", "swimsuit", "swimwear", "lingerie", "jewellery", "jewelry",
+    "handbag", "sneaker", "shoe", "heels", "skirt", "trouser", "jeans", "coat",
+    "knitwear", "streetwear", "couture", "sari", "trend", "wear", "closet",
+)
+
+# Hard noise blocklist — if the title hits any of these, drop it regardless.
+_NOISE = (
+    "dies", "died", "death", "killed", "crash", "helicopter", "payment",
+    "bank", "petroleum", "bitumen", "gas", "transit", "biometric", "election",
+    "stock", "earnings", "lawsuit", "merger", "ipo", "layoffs", "gdp", "tariff",
+)
 
 
-def _looks_fashion(title: str, text: str) -> bool:
-    blob = f"{title} {text}".lower()
-    if any(n in blob for n in _NOISE):
+def _looks_fashion(title: str) -> bool:
+    t = title.lower()
+    if any(n in t for n in _NOISE):
         return False
-    # Require at least one fashion-y anchor word
-    anchors = ("fashion", "style", "trend", "wear", "outfit", "runway",
-               "collection", "aesthetic", "wardrobe", "designer", "look")
-    return any(a in blob for a in anchors)
+    return any(a in t for a in _ANCHORS)
 
 
 def scrape(days_back: int = 7, per_query: int = 12) -> list[dict]:
@@ -54,7 +61,7 @@ def scrape(days_back: int = 7, per_query: int = 12) -> list[dict]:
         print("     [world_news] WORLD_NEWS_API_KEY not set — skipping")
         return []
 
-    earliest = (datetime.utcnow() - timedelta(days=days_back)).strftime("%Y-%m-%d")
+    earliest = (datetime.now(timezone.utc) - timedelta(days=days_back)).strftime("%Y-%m-%d")
     signals: list[dict] = []
     seen_titles: set[str] = set()
 
@@ -87,7 +94,7 @@ def scrape(days_back: int = 7, per_query: int = 12) -> list[dict]:
             key = title.lower()
             if key in seen_titles:
                 continue
-            if not _looks_fashion(title, text):
+            if not _looks_fashion(title):
                 continue
             seen_titles.add(key)
 
