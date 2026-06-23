@@ -1,71 +1,106 @@
 {
-  "generated_at": "2026-06-01T23:35:01.155375",
-  "week_of": "May 25",
+  "generated_at": "2026-06-23T04:30:09.492131",
+  "week_of": "Jun 16",
   "new_trends": [
     {
-      "id": "8b19edcd-cd76-4f78-be2f-5cf05a5f59a4",
-      "name": "Quarter Zip Quiet Luxury",
-      "score": 10.0,
-      "source": "social_data",
-      "created_at": "2026-05-29T20:18:56.111206"
-    },
-    {
-      "id": "3615d62c-56ac-40ca-8c43-fc1e8cc434b1",
-      "name": "Summer Nails 2026",
-      "score": 9.9,
-      "source": "pinterest_trends_2026",
-      "created_at": "2026-05-29T18:06:20.126237"
-    },
-    {
-      "id": "6d058a6f-f0df-482b-b5c0-3e3b87423dd5",
-      "name": "The Edited Self: Intentional Wardrobe",
-      "score": 9.5,
-      "source": "depop_2026",
-      "created_at": "2026-05-29T18:06:20.157951"
-    },
-    {
-      "id": "cdb1ac37-d0bb-4e16-ba0e-dccb97bcc29e",
-      "name": "Neo Nostalgia",
-      "score": 9.3,
-      "source": "depop_2026",
-      "created_at": "2026-05-29T18:06:20.112108"
-    },
-    {
-      "id": "dd68e7c1-2f20-4469-ba37-493d44ddb377",
-      "name": "Thrift Arbitrage Culture",
-      "score": 9.3,
-      "source": "trend_intelligence",
-      "created_at": "2026-05-29T20:18:56.096633"
-    },
-    {
-      "id": "a1117cef-f2dd-41f8-9c10-8e65ed351fb2",
-      "name": "Sheer Layering",
-      "score": 9.2,
+      "id": "c5f708bb-ef18-48b3-8702-a22483ada6a7",
+      "name": "Plus Size Cottagecore",
+      "score": 5.3,
       "source": "reddit",
-      "created_at": "2026-05-28T18:50:30.113333"
+      "created_at": "2026-06-23T04:29:12.553221"
     },
     {
-      "id": "cce1b571-acfe-4e2f-8ff2-95da99fd85ae",
-      "name": "Matthieu Blazy Era at Chanel",
-      "score": 9.2,
-      "source": "social_data",
-      "created_at": "2026-05-29T18:06:20.136923"
+      "id": "ca9f7711-f6e4-428c-8fb7-4da613f113d1",
+      "name": "Medieval Cottagecore Fusion",
+      "score": 4.8,
+      "source": "reddit",
+      "created_at": "2026-06-23T04:29:13.192201"
     },
     {
-      "id": "cb79d367-7bd5-4387-b21b-eafa39a4c53c",
-      "name": "Modern Uniforms",
-      "score": 9.1,
-      "source": "depop_2026",
-      "created_at": "2026-05-29T18:06:20.099285"
+      "id": "2ebeabae-ddaf-4eaf-9b41-12d253b0cf49",
+      "name": "Royal Accessible Dressing",
+      "score": 4.7,
+      "source": "world_news",
+      "created_at": "2026-06-23T04:29:10.587380"
+    },
+    {
+      "id": "ddf312ad-d8b3-49bd-9a10-96f6784996aa",
+      "name": "Royal Event Dressing",
+      "score": 4.7,
+      "source": "world_news",
+      "created_at": "2026-06-23T04:29:08.661361"
+    },
+    {
+      "id": "5a719329-639f-4d42-83d8-214c195e5027",
+      "name": "Denim Psychological Identity",
+      "score": 4.2,
+      "source": "world_news",
+      "created_at": "2026-06-23T04:29:08.026396"
+    },
+    {
+      "id": "aeb7506e-015c-497a-9b88-ba2530c61745",
+      "name": "Shell Nails",
+      "score": 4.2,
+      "source": "world_news",
+      "created_at": "2026-06-23T04:29:08.320114"
+    },
+    {
+      "id": "cf308d0e-3e72-434f-bbfc-32dd1280051e",
+      "name": "Contemporary Sari Revival",
+      "score": 4.2,
+      "source": "world_news",
+      "created_at": "2026-06-23T04:29:09.148733"
+    },
+    {
+      "id": "0a85f14a-4354-4557-8a7a-0a7239defba7",
+      "name": "Bollywood Celebrity Chic",
+      "score": 4.2,
+      "source": "world_news",
+      "created_at": "2026-06-23T04:29:09.570626"
     }
   ],
   "top_movers": [
     {
-      "id": "2c4983fa-ab06-4189-a409-e3ca52976491",
-      "name": "Parisian Summer Dressing",
-      "score": 4.1,
-      "delta": -1.4,
-      "direction": "down"
+      "id": "cdb1ac37-d0bb-4e16-ba0e-dccb97bcc29e",
+      "name": "Neo Nostalgia",
+      "score": 9.52,
+      "delta": 1.0,
+      "direction": "up"
+    },
+    {
+      "id": "2ebeabae-ddaf-4eaf-9b41-12d253b0cf49",
+      "name": "Royal Accessible Dressing",
+      "score": 4.7,
+      "delta": 0.5,
+      "direction": "up"
+    },
+    {
+      "id": "3621ef24-e816-43c0-9524-b1f40262a0b7",
+      "name": "Old Money Quiet Luxury Aesthetic",
+      "score": 5.31,
+      "delta": 0.5,
+      "direction": "up"
+    },
+    {
+      "id": "6ccb7fd5-a685-4f1e-9cad-ad9bc0eb7b93",
+      "name": "Dark Academia Aesthetic",
+      "score": 6.73,
+      "delta": 0.5,
+      "direction": "up"
+    },
+    {
+      "id": "712aeb08-51b1-4967-b4d5-ea2917ef722b",
+      "name": "Cottagecore Aesthetic Revival",
+      "score": 6.45,
+      "delta": 0.5,
+      "direction": "up"
+    },
+    {
+      "id": "8b19edcd-cd76-4f78-be2f-5cf05a5f59a4",
+      "name": "Quarter Zip Quiet Luxury",
+      "score": 9.66,
+      "delta": 0.5,
+      "direction": "up"
     }
   ],
   "resolved_markets": [],
@@ -73,51 +108,45 @@
     {
       "id": "8b19edcd-cd76-4f78-be2f-5cf05a5f59a4",
       "name": "Quarter Zip Quiet Luxury",
-      "score": 10.0,
-      "platforms": "google_trends,tiktok,editorial_rss,social_data",
-      "platform_count": 5
-    },
-    {
-      "id": "3615d62c-56ac-40ca-8c43-fc1e8cc434b1",
-      "name": "Summer Nails 2026",
-      "score": 9.9,
-      "platforms": "pinterest_trends_2026,pinterest",
-      "platform_count": 2
-    },
-    {
-      "id": "6d058a6f-f0df-482b-b5c0-3e3b87423dd5",
-      "name": "The Edited Self: Intentional Wardrobe",
-      "score": 9.5,
-      "platforms": "depop_2026,trend_intelligence",
+      "score": 9.66,
+      "platforms": "google_trends,social_data",
       "platform_count": 2
     },
     {
       "id": "cdb1ac37-d0bb-4e16-ba0e-dccb97bcc29e",
       "name": "Neo Nostalgia",
-      "score": 9.3,
+      "score": 9.52,
       "platforms": "depop_2026,reddit",
+      "platform_count": 3
+    },
+    {
+      "id": "3615d62c-56ac-40ca-8c43-fc1e8cc434b1",
+      "name": "Summer Nails 2026",
+      "score": 9.07,
+      "platforms": "pinterest_trends_2026,pinterest",
       "platform_count": 2
     },
     {
       "id": "dd68e7c1-2f20-4469-ba37-493d44ddb377",
       "name": "Thrift Arbitrage Culture",
-      "score": 9.3,
-      "platforms": "tiktok,trend_intelligence,reddit",
-      "platform_count": 3
-    }
-  ],
-  "score_casualties": [
+      "score": 9.02,
+      "platforms": "social_data,trend_intelligence",
+      "platform_count": 2
+    },
     {
-      "name": "Parisian Summer Dressing",
-      "score": 4.1,
-      "delta": -1.4
+      "id": "6d058a6f-f0df-482b-b5c0-3e3b87423dd5",
+      "name": "The Edited Self: Intentional Wardrobe",
+      "score": 8.7,
+      "platforms": "depop_2026,trend_intelligence",
+      "platform_count": 2
     }
   ],
+  "score_casualties": [],
   "stats": {
-    "total_trends": 315,
+    "total_trends": 338,
     "new_this_week": 8,
     "markets_resolved": 0,
-    "cross_platform_count": 24,
-    "top_score": 10.0
+    "cross_platform_count": 28,
+    "top_score": 9.66
   }
 }

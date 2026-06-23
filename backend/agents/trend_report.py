@@ -29,6 +29,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import anthropic
+import httpx
 from dotenv import load_dotenv
 
 # Allow running both as a module and as a script
@@ -74,6 +75,38 @@ Write a trend report. Respond in JSON with this exact structure:
 }}
 
 Every trend in the list must have a brief keyed by its exact id. Be specific and commercial. Do not invent scores. No em dashes anywhere."""
+
+
+def _fetch_image_url(trend_name: str, category: str | None, access_key: str | None) -> str | None:
+    """Fetch one landscape fashion photo from Unsplash.
+    Uses the merch category (e.g. 'Knitwear') as the query — more reliable than
+    specific trend names. Falls back to 'fashion editorial' if still no results.
+    Returns None silently if no key or request fails.
+    Free tier: 50 req/hour. Set UNSPLASH_ACCESS_KEY in .env to enable.
+    """
+    if not access_key:
+        return None
+    queries = []
+    if category:
+        queries.append(f"fashion {category}")
+    # First word of trend name as lightweight backup
+    first = trend_name.split()[0].lower()
+    if first not in (category or "").lower():
+        queries.append(f"fashion {first}")
+    queries.append("fashion editorial style")
+
+    for q in queries:
+        try:
+            resp = httpx.get(
+                "https://api.unsplash.com/photos/random",
+                params={"query": q, "orientation": "landscape", "client_id": access_key},
+                timeout=6,
+            )
+            if resp.status_code == 200:
+                return resp.json()["urls"]["regular"]
+        except Exception:
+            pass
+    return None
 
 
 def _gather_trends(db, limit: int, min_score: float):
@@ -157,10 +190,13 @@ def generate_report(limit: int = 8, min_score: float = 5.0) -> dict:
         period = datetime.now(timezone.utc).strftime("%B %Y")
         narrative = _claude_layer(payloads, period)
 
+        unsplash_key = os.getenv("UNSPLASH_ACCESS_KEY")
         briefs = narrative.get("briefs", {})
         items = []
         for p in payloads:
             p["brief"] = briefs.get(p["id"], {})
+            category = p["brief"].get("category")
+            p["image_url"] = _fetch_image_url(p["name"], category, unsplash_key)
             items.append(p)
 
         report = {

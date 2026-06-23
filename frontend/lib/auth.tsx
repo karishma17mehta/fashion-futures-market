@@ -35,6 +35,7 @@ type AuthContextType = {
 };
 
 const TOKEN_KEY = "ff_token";
+const GUEST_KEY = "ff_guest";
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 /** Turn a FastAPI error body into a readable string. */
@@ -52,12 +53,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [isGuest, setIsGuest] = useState(false);
 
-  const continueAsGuest = useCallback(() => setIsGuest(true), []);
-  const exitGuest = useCallback(() => setIsGuest(false), []);
+  const continueAsGuest = useCallback(() => {
+    localStorage.setItem(GUEST_KEY, "1");
+    setIsGuest(true);
+  }, []);
+  const exitGuest = useCallback(() => {
+    localStorage.removeItem(GUEST_KEY);
+    setIsGuest(false);
+  }, []);
 
-  // Restore session from token on mount.
+  // Restore session from token on mount; also restore guest mode.
   useEffect(() => {
-    const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null;
+    if (typeof window === "undefined") { setLoading(false); return; }
+    if (localStorage.getItem(GUEST_KEY)) setIsGuest(true);
+    const token = localStorage.getItem(TOKEN_KEY);
     if (!token) { setLoading(false); return; }
     fetchMe(token)
       .then((u) => {
@@ -92,6 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(GUEST_KEY);
     setUser(null);
   }, []);
 
