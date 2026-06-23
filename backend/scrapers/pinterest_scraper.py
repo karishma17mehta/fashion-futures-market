@@ -342,7 +342,7 @@ if __name__ == "__main__":
     _backend = Path(__file__).resolve().parent.parent
     sys.path.insert(0, str(_backend))
     from dotenv import load_dotenv
-    load_dotenv(_backend / ".env", override=True)
+    load_dotenv(_backend / ".env", override=False)
 
     parser = argparse.ArgumentParser(description="Pinterest Trends scraper")
     parser.add_argument("--keywords", type=str, help="Comma-separated keywords to look up")

@@ -1,7 +1,7 @@
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.routes import trends, markets, users, signals, alerts, auth
+from api.routes import trends, markets, users, signals, alerts, auth, reports
 
 app = FastAPI(title="Fashion Futures Market API", version="0.1.0")
 
@@ -26,6 +26,7 @@ app.include_router(markets.router, prefix="/markets", tags=["markets"])
 app.include_router(users.router, prefix="/users", tags=["users"])
 app.include_router(signals.router, prefix="/signals", tags=["brand-api"])
 app.include_router(alerts.router,  prefix="/alerts",  tags=["alerts"])
+app.include_router(reports.router, prefix="/reports", tags=["reports"])
 
 
 @app.get("/health")

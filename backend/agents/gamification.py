@@ -42,7 +42,7 @@ if str(_BACKEND) not in sys.path:
     sys.path.insert(0, str(_BACKEND))
 
 from dotenv import load_dotenv
-load_dotenv(_BACKEND / ".env", override=True)
+load_dotenv(_BACKEND / ".env", override=False)
 
 from db.session import SessionLocal
 from db.models import User, Position, Market, MarketStatus, Trend, UserActivity, UserBadge, UserRank

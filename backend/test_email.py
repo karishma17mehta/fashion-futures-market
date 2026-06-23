@@ -4,7 +4,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from dotenv import load_dotenv
-load_dotenv(".env", override=True)
+load_dotenv(".env", override=False)
 
 from agents.alert_dispatcher import _send_email
 import os

@@ -21,7 +21,7 @@ if str(_BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(_BACKEND_DIR))
 
 from dotenv import load_dotenv
-load_dotenv(_BACKEND_DIR / ".env", override=True)
+load_dotenv(_BACKEND_DIR / ".env", override=False)
 
 from scrapers import trendhunter_scraper, google_trends_scraper, reddit_scraper, tiktok_scraper, pinterest_scraper, worldnews_scraper
 from scoring.formula import (

@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 const links = [
   { href: "/",           label: "Markets" },
   { href: "/trends",     label: "Signals" },
+  { href: "/report",     label: "Report" },
   { href: "/portfolio",  label: "Portfolio" },
   { href: "/alerts",     label: "Alerts" },
   { href: "/leaderboard",label: "Leaderboard" },

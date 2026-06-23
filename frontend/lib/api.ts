@@ -90,3 +90,9 @@ export async function fetchMe(token: string) {
   if (!res.ok) return null;
   return res.json();
 }
+
+export async function fetchLatestReport() {
+  const res = await fetch(`${BASE}/reports/latest`, { cache: "no-store" });
+  if (!res.ok) return null;
+  return res.json();
+}

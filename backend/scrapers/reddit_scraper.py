@@ -20,7 +20,7 @@ from pathlib import Path
 import praw
 from dotenv import load_dotenv
 
-load_dotenv(Path(__file__).resolve().parent.parent / ".env", override=True)
+load_dotenv(Path(__file__).resolve().parent.parent / ".env", override=False)
 
 FASHION_SUBREDDITS: list[str] = [
     "femalefashionadvice",

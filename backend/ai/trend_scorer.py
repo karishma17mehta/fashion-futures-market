@@ -20,7 +20,7 @@ import json
 import os
 from dotenv import load_dotenv
 
-load_dotenv(os.path.join(os.path.dirname(__file__), "../.env"), override=True)
+load_dotenv(os.path.join(os.path.dirname(__file__), "../.env"), override=False)
 
 client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 

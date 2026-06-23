@@ -366,7 +366,7 @@ if __name__ == "__main__":
         _backend = Path(__file__).resolve().parent.parent
         sys.path.insert(0, str(_backend))
         from dotenv import load_dotenv
-        load_dotenv(_backend / ".env", override=True)
+        load_dotenv(_backend / ".env", override=False)
 
         from scoring.formula import compute_score
         from ai.trend_scorer import generate_narrative

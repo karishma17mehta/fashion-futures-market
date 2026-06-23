@@ -24,8 +24,15 @@ _BACKEND = Path(__file__).resolve().parent.parent
 if str(_BACKEND) not in sys.path:
     sys.path.insert(0, str(_BACKEND))
 
+import os as _os
 from dotenv import load_dotenv
-load_dotenv(_BACKEND / ".env", override=True)
+# Preserve a DATABASE_URL passed on the command line (e.g. pointing at the
+# cloud DB) so the local .env value doesn't clobber it. In Railway there is no
+# .env file, so the platform-provided env vars are used as-is.
+_cli_db = _os.environ.get("DATABASE_URL")
+load_dotenv(_BACKEND / ".env", override=False)
+if _cli_db:
+    _os.environ["DATABASE_URL"] = _cli_db
 
 
 def main():
